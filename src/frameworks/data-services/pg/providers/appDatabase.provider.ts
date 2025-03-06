@@ -17,7 +17,6 @@ export const appDataSourceProviders = [
           type: 'postgres',
           url: config.getDatabaseMainUrl(),
           database: config.getDatabaseName(),
-          logging: true,
           synchronize: true,
           entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
         };
