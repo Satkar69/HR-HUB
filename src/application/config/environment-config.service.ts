@@ -4,6 +4,21 @@ import { DatabaseConfig } from 'src/core/config/database.interface';
 import { JWTConfig } from 'src/core/config/jwt.interface';
 import { DefaultSuperAdminConfig } from 'src/core/config/superadmin.interface';
 
+/**
+ * 
+ * can make your service more flexible by using the ConfigService to read environment variables.
+ * 
+ * environmanet variables reference example
+ *DATABASE_PORT=5433
+  DATABASE_PORT=23153
+  DATABASE_USER="avnadmin"
+  DATABASE_PASSWORD="AVNS_NYATV4VLRbcUw4B34E8"
+  DATABASE_NAME="pre-ipo"
+  DATABASE_SCHEMA="public"
+  DATABASE_SYNCHRONIZE="false"
+ * 
+ */
+
 @Injectable()
 export class EnvironmentConfigService
   implements JWTConfig, DefaultSuperAdminConfig, DatabaseConfig
