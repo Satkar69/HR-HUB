@@ -7,12 +7,12 @@ import { AppClsStore } from 'src/common/interface/app-cls-store.interface';
 
 import { CheckTokenDto, SigninDto } from 'src/core/dtos/request/signin.dto';
 import { AdminEntity } from 'src/frameworks/data-services/pg/entities/admin.entity';
-import { AdminUserAuthUseCaseService } from 'src/use-cases/admin-use-cases/admin-user/admin-user-auth-use-case.service';
+import { AdminAuthUseCaseService } from 'src/use-cases/admin-use-cases/admin/admin-auth-use-case.service';
 
 @Controller('/admin')
 export class AdminAuthController {
   constructor(
-    private adminAuthUseCaseService: AdminUserAuthUseCaseService,
+    private adminAuthUseCaseService: AdminAuthUseCaseService,
     private readonly cls: ClsService<AppClsStore>,
   ) {}
 

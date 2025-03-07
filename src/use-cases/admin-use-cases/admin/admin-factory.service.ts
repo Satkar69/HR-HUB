@@ -8,7 +8,7 @@ import { AdminModel } from 'src/core/models';
 import { AdminRoleEnum } from 'src/common/enums/admin-role.enum';
 
 @Injectable()
-export class AdminUserFactoryService {
+export class AdminFactoryService {
   createNewAdmin(createAdminDto: CreateAdminDto) {
     const admin = new AdminModel();
     admin.name = createAdminDto.name;

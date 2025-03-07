@@ -7,6 +7,7 @@ import { IJwtService } from 'src/core/abstracts/adapters/jwt.interface';
 import { IS_ADMIN_KEY } from '../decorators/admin.decorator';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import AppUnauthorizedException from '../exception/app-unauthorized.exception';
+import { IS_USER_KEY } from '../decorators/user.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,7 +26,7 @@ export class AuthGuard implements CanActivate {
       this._reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
         context.getHandler(),
         context.getClass(),
-      ]) || requestUrl.startsWith('/api/pre-ipo/public')
+      ]) || requestUrl.startsWith('/api/hr-hub/public')
         ? true
         : false;
     if (isPublic) {
@@ -37,16 +38,26 @@ export class AuthGuard implements CanActivate {
       this._reflector.getAllAndOverride<boolean>(IS_ADMIN_KEY, [
         context.getHandler(),
         context.getClass(),
-      ]) || requestUrl.startsWith('/api/pre-ipo/admin')
+      ]) || requestUrl.startsWith('/api/hr-hub/admin')
+        ? true
+        : false;
+
+    const isUser =
+      this._reflector.getAllAndOverride<boolean>(IS_USER_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]) || requestUrl.startsWith('/api/hr-hub/user')
         ? true
         : false;
 
     this.cls.set('isPublic', isPublic);
     this.cls.set('isAdmin', isAdmin);
+    this.cls.set('isUser', isUser);
+
     if (isPublic) {
       return true;
     }
-    if (isAdmin) {
+    if (isAdmin || isUser) {
       const token = this.extractTokenFromHeader(request);
       if (!token || token === 'null' || token === 'undefined') {
         throw new AppUnauthorizedException(

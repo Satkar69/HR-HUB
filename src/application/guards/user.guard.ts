@@ -5,7 +5,7 @@ import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import AppUnauthorizedException from '../exception/app-unauthorized.exception';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class UserGuard implements CanActivate {
   constructor(
     private readonly cls: IClsStore<AppClsStore>,
     private readonly dataServices: IDataServices,
@@ -16,8 +16,8 @@ export class AdminGuard implements CanActivate {
     if (isPublic) {
       return true;
     }
-    const isAdmin = this.cls.get<boolean>('isAdmin');
-    if (isAdmin) {
+    const isUser = this.cls.get<boolean>('isUser');
+    if (isUser) {
       const payload = this.cls.get<any>('payload');
       console.log('payload', payload);
       if (!payload) {
@@ -25,16 +25,15 @@ export class AdminGuard implements CanActivate {
           'Invalid token. Please login again.',
         );
       }
-      const admin = await this.dataServices.admin.getOneOrNull({
+      const user = await this.dataServices.user.getOneOrNull({
         email: payload.sub,
       });
-
-      if (!admin) {
+      if (!user) {
         throw new AppUnauthorizedException(
           'Invalid token. Please login again.',
         );
       }
-      this.cls.set('adminUser', admin);
+      this.cls.set('user', user);
     }
 
     return true;
