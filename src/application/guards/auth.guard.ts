@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
       this._reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
         context.getHandler(),
         context.getClass(),
-      ]) || requestUrl.startsWith('/api/pre-ipo/public')
+      ]) || requestUrl.startsWith('/api/hr-hub/public')
         ? true
         : false;
     if (isPublic) {
@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
       this._reflector.getAllAndOverride<boolean>(IS_ADMIN_KEY, [
         context.getHandler(),
         context.getClass(),
-      ]) || requestUrl.startsWith('/api/pre-ipo/admin')
+      ]) || requestUrl.startsWith('/api/hr-hub/admin')
         ? true
         : false;
 
@@ -48,6 +48,7 @@ export class AuthGuard implements CanActivate {
     }
     if (isAdmin) {
       const token = this.extractTokenFromHeader(request);
+      console.log('token', token);
       if (!token || token === 'null' || token === 'undefined') {
         throw new AppUnauthorizedException(
           'Invalid token. Please login again.',
