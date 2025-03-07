@@ -12,10 +12,8 @@ RUN npm ci
 #  Copy 
 COPY . .
 
-
 # install nest js silent
 RUN npm install -g @nestjs/cli --silent
-
 
 # build
 RUN npm run build
