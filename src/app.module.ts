@@ -12,13 +12,13 @@ import { ControllerModule } from './application/controllers/controller.module';
 import routes from './application/controllers/routes';
 import { HttpExceptionFilter } from './application/filters/http-exception.filter';
 import { AdminGuard } from './application/guards/admin.guard';
+import { UserGuard } from './application/guards/user.guard';
 import { AuthGuard } from './application/guards/auth.guard';
 import { HttpLoggingInterceptor } from './application/interceptors/http-logging.interceptor';
 import { ResponseInterceptor } from './application/interceptors/response.interceptor';
 import { ClsServiceModule } from './libs/cls-store/cls-store.module';
 import { DataServicesModule } from './services/data-services/data-services.module';
 import { JwtServiceModule } from './libs/jwt/jwt.module';
-import { join } from 'path';
 @Module({
   imports: [
     ClsServiceModule,
@@ -56,6 +56,10 @@ import { join } from 'path';
     {
       provide: APP_GUARD,
       useClass: AdminGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: UserGuard,
     },
   ],
 })
