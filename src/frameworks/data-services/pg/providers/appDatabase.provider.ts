@@ -16,6 +16,8 @@ export const appDataSourceProviders = [
         const dataSourceOptions: object = {
           type: 'postgres',
           url: config.getDatabaseMainUrl(),
+          // docker pg image local development
+          // url: config.getDatabaseUrl(),
           database: config.getDatabaseName(),
           synchronize: true,
           entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
