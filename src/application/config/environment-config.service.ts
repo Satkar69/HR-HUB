@@ -53,4 +53,8 @@ export class EnvironmentConfigService
   getDatabaseDevUrl(): string {
     return this.configService.get<string>('DB_URL_DEV');
   }
+
+  getDatabaseUrl(): string {
+    return this.configService.get<string>('DATABASE_URL');
+  }
 }

@@ -15,13 +15,13 @@ import {
   CreateAdminDto,
   UpdateAdminDto,
 } from 'src/core/dtos/request/admin.dto';
-import { AdminUserUseCaseService } from 'src/use-cases/admin-use-cases/admin-user/admin-user-use-case.service';
+import { AdminUseCaseService } from 'src/use-cases/admin-use-cases/admin/admin-use-case.service';
 
-@Controller('admin-user')
+@Controller()
 export class AdminController {
-  constructor(private adminUseCaseService: AdminUserUseCaseService) {}
+  constructor(private adminUseCaseService: AdminUseCaseService) {}
 
-  @Post()
+  @Post('/create')
   @Roles(AdminRoleEnum.SUPER_ADMIN)
   async createAdmin(@Body() createAdminDto: CreateAdminDto) {
     return CoreApiResponse.success(

@@ -5,26 +5,16 @@ import { AdminRoleEnum } from 'src/common/enums/admin-role.enum';
 
 @Entity('admins')
 export class AdminEntity extends BaseEntity {
-  @Column({
-    name: 'full_name',
-  })
+  @Column({ name: 'full_name' })
   name: string;
 
-  @Column({
-    name: 'email',
-    unique: true,
-  })
+  @Column({ name: 'email', unique: true })
   email: string;
 
-  @Column({
-    name: 'password',
-  })
+  @Column({ name: 'password' })
   password: string;
 
-  @Column({
-    default: AdminRoleEnum.ADMIN,
-    name: 'role',
-  })
+  @Column({ default: AdminRoleEnum.ADMIN, name: 'role' })
   role: AdminRoleEnum;
 
   async comparePassword(password: string): Promise<boolean> {
@@ -38,14 +28,10 @@ export class AdminEntity extends BaseEntity {
 
   @BeforeInsert()
   async hashPasswordBeforeInsert(): Promise<void> {
-    console.log('base entity');
     this.password = await this.hashPassword(this.password);
   }
 
   toJSON() {
-    return {
-      ...this,
-      password: undefined,
-    };
+    return { ...this, password: undefined };
   }
 }
