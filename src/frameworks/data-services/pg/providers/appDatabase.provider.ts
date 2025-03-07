@@ -15,9 +15,15 @@ export const appDataSourceProviders = [
       try {
         const dataSourceOptions: object = {
           type: 'postgres',
-          url: config.getDatabaseMainUrl(),
+          // database bain branch
+          // url: config.getDatabaseMainUrl(),
+
+          // database dev branch
+          url: config.getDatabaseDevUrl(),
+
           // docker pg image local development
           // url: config.getDatabaseUrl(),
+
           database: config.getDatabaseName(),
           synchronize: true,
           entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
