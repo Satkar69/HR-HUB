@@ -8,7 +8,7 @@ import { AdminModel } from 'src/core/models';
 import { AdminSignInResponseType } from './types/admin-signin-response';
 
 @Injectable()
-export class AdminUserAuthUseCaseService {
+export class AdminAuthUseCaseService {
   constructor(
     private dataServices: IDataServices,
     private readonly _jwtService: IJwtService,

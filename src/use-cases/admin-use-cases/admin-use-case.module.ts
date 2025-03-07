@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AdminUserUseCasesModule } from './admin-user/admin-user-use-cases.module';
+import { AdminFeatUseCaseModule } from './admin/admin-use-cases.module';
 @Module({
-  imports: [AdminUserUseCasesModule],
-  exports: [AdminUserUseCasesModule],
+  imports: [AdminFeatUseCaseModule],
+  exports: [AdminFeatUseCaseModule],
 })
-export class AdminUseCasesModule {}
+export class AdminUseCaseModule {}

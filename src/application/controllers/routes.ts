@@ -10,11 +10,11 @@ const routes: Routes = [
         path: '/admin',
         children: [AdminControllerModule],
       },
+      {
+        path: '/auth',
+        children: [AuthControllerModule],
+      },
     ],
-  },
-  {
-    path: '/auth',
-    children: [AuthControllerModule],
   },
 ];
 
