@@ -20,5 +20,7 @@
     "paths": {
       "src/*": ["src/*"]
     }
-  }
+  },
+  "include": ["src/**/*"], // Explicitly include only the `src` directory
+  "exclude": ["node_modules", "test", "dist", "**/*.spec.ts"] // Exclude unnecessary files and directories
 }

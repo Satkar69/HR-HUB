@@ -8,9 +8,13 @@ services:
       - .env
     ports:
       - 5432:5432
-      # - 5433:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d hr-hub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
@@ -20,9 +24,24 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - 5050:80
-      # - 5051:80
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d hr-hub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  hr_hub:
+    image: hr_hub:latest
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://admin:admin@postgres:5432/hr-hub
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
 volumes:
   redis-insight:
   postgres-data:
