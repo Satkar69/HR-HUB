@@ -46,8 +46,6 @@ lerna-debug.log*
 .temp
 .tmp
 
-# Database files
-db.vuerd
 
 # Runtime data
 pids
