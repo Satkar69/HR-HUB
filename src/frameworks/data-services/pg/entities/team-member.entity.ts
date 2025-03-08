@@ -13,6 +13,6 @@ export class TeamMemberEntity extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   member: UserEntity;
 
-  @Column({ name: 'is_leader' })
+  @Column({ name: 'is_leader', default: false })
   isLeader: boolean;
 }

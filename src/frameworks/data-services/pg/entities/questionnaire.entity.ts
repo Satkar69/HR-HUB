@@ -11,7 +11,7 @@ export class QuestionnaireEntity extends BaseEntity {
   question: string;
 
   @Column({ name: 'answer' })
-  ansert: string;
+  answer: string;
 
   @Column({ name: 'ratings' })
   ratings: number;

@@ -6,6 +6,9 @@ import { PeerNominationEntity } from './peer-nomination.entity';
 
 @Entity('reviews')
 export class ReviewEntity extends BaseEntity {
+  @Column({ name: 'review_type' })
+  reviewType: ReviewTypeEnum;
+
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'reviewer_id' })
   reviewer: UserEntity;
@@ -13,9 +16,6 @@ export class ReviewEntity extends BaseEntity {
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'reviewee_id' })
   reviewee: UserEntity;
-
-  @Column({ name: 'review_type' })
-  reviewType: ReviewTypeEnum;
 
   @Column({ name: 'subject' })
   subject: string;
