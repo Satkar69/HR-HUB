@@ -3,6 +3,10 @@
 /node_modules
 /build
 
+
+# external tool
+/db.vuerd
+
 # Logs
 logs
 *.log
