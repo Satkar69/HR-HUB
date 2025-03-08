@@ -2,7 +2,7 @@ import { PeerNominationStatusEnum } from 'src/common/enums/peer-nomination-statu
 import { ReviewModel } from './review.model';
 import { UserModel } from './user.model';
 
-export class PeerNomincationModel {
+export class PeerNominationModel {
   id: number;
   review: ReviewModel;
   nominator: UserModel;
