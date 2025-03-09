@@ -5,6 +5,7 @@ import { CreateUserDto } from 'src/core/dtos/request/user.dto';
 import { UserModel } from 'src/core/models/user.model';
 import { AdminUserFactoryUseCaseService } from './admin-user-factory-use-case.service';
 import { IBcryptService } from 'src/core/abstracts/adapters/bcrypt.abstract';
+import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 
 @Injectable()
 export class AdminUserUseCaseService {
@@ -28,5 +29,9 @@ export class AdminUserUseCaseService {
     }
     user.password = await this.bcryptService.hash(user.password);
     return await this.dataServices.user.create(user);
+  }
+
+  async getAllUser(): Promise<IPaginationData> {
+    return await this.dataServices.user.getAll();
   }
 }

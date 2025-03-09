@@ -31,7 +31,7 @@ export class AdminController {
     );
   }
 
-  @Patch(':id')
+  @Patch('/update/:id')
   async updateAdmin(
     @Param('id') id: string,
     @Body() updateAdminDto: UpdateAdminDto,
@@ -43,7 +43,7 @@ export class AdminController {
     );
   }
 
-  @Get()
+  @Get('/get-all')
   async getAllAdmin(@Query() query: IPaginationQuery) {
     return CoreApiResponse.pagination(
       await this.adminUseCaseService.getAllAdmin(),
@@ -51,7 +51,7 @@ export class AdminController {
     );
   }
 
-  @Get(':id')
+  @Get('/get/:id')
   async getAdmin(@Param('id') id: string) {
     return CoreApiResponse.success(await this.adminUseCaseService.getAdmin(id));
   }
