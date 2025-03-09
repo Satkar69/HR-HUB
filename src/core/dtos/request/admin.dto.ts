@@ -31,8 +31,12 @@ export class CreateAdminDto {
 export class UpdateAdminDto {
   @IsString()
   @Transform(({ value }) => value?.trim())
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
+  @IsEmail()
+  @Transform(({ value }) => value?.trim())
+  @IsOptional()
+  email: string;
 }
 
 export class UpdateAdminPasswordDto {
