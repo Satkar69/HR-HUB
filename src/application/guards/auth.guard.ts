@@ -55,7 +55,9 @@ export class AuthGuard implements CanActivate {
       this._reflector.getAllAndOverride<boolean>(IS_MANAGER_KEY, [
         context.getHandler(),
         context.getClass(),
-      ]) || requestUrl.startsWith('/api/hr-hub/user/team/create')
+      ]) ||
+      requestUrl.startsWith('/api/hr-hub/user/team/create') ||
+      requestUrl.startsWith('/api/hr-hub/user/team/member/create')
         ? true
         : false;
 
