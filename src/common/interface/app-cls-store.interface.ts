@@ -10,6 +10,7 @@ export interface AppClsStore extends ClsStore {
   isPublic?: boolean;
   isAdmin?: boolean;
   isUser?: boolean;
+  isManager?: boolean;
   payload?: JwtPayload;
   paginationQuery?: IPaginationQuery;
 }

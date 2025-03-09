@@ -38,7 +38,6 @@ export class AdminAuthController {
   @Admin()
   @Get('/me')
   async me() {
-    console.log('me');
     return CoreApiResponse.success(this.cls.get<AdminEntity>('adminUser'));
   }
 }

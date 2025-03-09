@@ -28,7 +28,6 @@ export class UserAuthController {
   @User()
   @Get('/me')
   async me() {
-    console.log('me');
     return CoreApiResponse.success(this.cls.get<UserEntity>('user'));
   }
 }
