@@ -33,7 +33,22 @@ export class AdminUserUseCaseService {
   }
   // todo: make corresponding routes in the controller
   async getUserById(userId: number) {
-    return await this.dataServices.user.getOne({ id: userId });
+    const assignedTeam = await this.dataServices.team.getOneOrNull({
+      leader: { id: userId },
+    });
+    const teamMemberships =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        member: { id: userId },
+      });
+    const user = await this.dataServices.user.getOne({ id: userId });
+    // add necessary related datas here
+
+    const { password, ...userWithoutPassword } = user;
+    return {
+      ...userWithoutPassword,
+      assignedTeam,
+      teamMemberships,
+    };
   }
 
   async getAllUser(): Promise<IPaginationData> {
