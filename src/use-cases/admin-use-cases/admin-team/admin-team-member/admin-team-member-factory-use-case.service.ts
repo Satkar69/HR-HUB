@@ -6,35 +6,17 @@ import { UserModel } from 'src/core/models/user.model';
 
 @Injectable()
 export class AdminTeamMemberFactoryUseCaseService {
-  createTeamMember(
-    createTeamMemberDto: CreateTeamMemberDto | null,
-    teamId: number | null,
-    userId: number | null,
-  ) {
+  createTeamMember(createTeamMemberDto: CreateTeamMemberDto) {
     const teamMember = new TeamMemberModel();
 
-    if (createTeamMemberDto) {
-      if (createTeamMemberDto.team) {
-        const teamModel = new TeamModel();
-        teamModel.id = createTeamMemberDto.team;
-        teamMember.team = teamModel;
-      }
-      if (createTeamMemberDto.member) {
-        const userModel = new UserModel();
-        userModel.id = createTeamMemberDto.member;
-        teamMember.member = userModel;
-      }
-    }
-
-    if (teamId) {
+    if (createTeamMemberDto.team) {
       const teamModel = new TeamModel();
-      teamModel.id = teamId;
+      teamModel.id = createTeamMemberDto.team;
       teamMember.team = teamModel;
     }
-
-    if (userId) {
+    if (createTeamMemberDto.member) {
       const userModel = new UserModel();
-      userModel.id = userId;
+      userModel.id = createTeamMemberDto.member;
       teamMember.member = userModel;
     }
 

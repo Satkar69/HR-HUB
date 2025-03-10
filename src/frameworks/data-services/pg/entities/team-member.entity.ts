@@ -9,7 +9,7 @@ export class TeamMemberEntity extends BaseEntity {
   @JoinColumn({ name: 'team_id' })
   team: TeamEntity;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'user_id' })
   member: UserEntity;
 
