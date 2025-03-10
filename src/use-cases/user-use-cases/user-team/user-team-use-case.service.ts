@@ -8,6 +8,7 @@ import {
   UserClsData,
 } from 'src/common/interface/app-cls-store.interface';
 import { UserTeamMemberFactoryUseCaseService } from './user-team-member/user-team-member-factory-service';
+import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 
 @Injectable()
 export class UserTeamUseCaseService {
@@ -34,5 +35,10 @@ export class UserTeamUseCaseService {
     leaderTeamMemberShip.isLeader = true;
     await this.dataServices.teamMember.create(leaderTeamMemberShip);
     return createdTeam;
+  }
+
+  async getMyTeams(): Promise<IPaginationData> {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    return await this.dataServices.team.getAll({ leader: userId });
   }
 }
