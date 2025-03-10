@@ -11,7 +11,6 @@ import {
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { CreateTeamDto, UpdateTeamDto } from 'src/core/dtos/request/team.dto';
-import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
 import { AdminTeamUseCaseService } from 'src/use-cases/admin-use-cases/admin-team/admin-team-use-case.service';
 
 @Controller('/team')
@@ -27,9 +26,9 @@ export class AdminTeamController {
 
   @Get('/get-all')
   async getAllTeams(@Query() query: IPaginationQuery) {
-    return CoreApiResponse.success(
+    return CoreApiResponse.pagination(
       await this.adminTeamUseCaseService.getAllTeams(),
-      //   query,
+      query,
     );
   }
 
