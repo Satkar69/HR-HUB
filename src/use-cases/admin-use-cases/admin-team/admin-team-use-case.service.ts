@@ -49,18 +49,15 @@ export class AdminTeamUseCaseService {
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: team.id },
       });
-    console.log(teamMembers);
     if (updateTeamDto.members.length !== teamMembers.length) {
       await Promise.all(
         updateTeamDto.members.map(async (member) => {
-          if (
-            !teamMembers.find((teamMember) => teamMember.member.id === member)
-          ) {
-            await this.dataServices.teamMember.remove({
-              team: team.id,
-              member: { id: member },
-            });
-          }
+          const notMatchingTeamMembers = teamMembers.filter(
+            (teamMember) => teamMember.member.id !== member,
+          );
+          notMatchingTeamMembers.forEach(async (teamMember) => {
+            await this.dataServices.teamMember.remove({ id: teamMember.id });
+          });
         }),
       );
     }
