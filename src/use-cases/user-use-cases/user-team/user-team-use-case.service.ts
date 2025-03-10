@@ -14,8 +14,9 @@ export class UserTeamUseCaseService {
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
+  // todo: bug to be fixed
   async getMyTeam(): Promise<TeamModel> {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    return await this.dataServices.team.getOneOrNull({ leader: userId });
+    return await this.dataServices.team.getOne({ leader: { id: userId } });
   }
 }
