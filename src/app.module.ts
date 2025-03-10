@@ -19,6 +19,7 @@ import { ResponseInterceptor } from './application/interceptors/response.interce
 import { ClsServiceModule } from './libs/cls-store/cls-store.module';
 import { DataServicesModule } from './services/data-services/data-services.module';
 import { JwtServiceModule } from './libs/jwt/jwt.module';
+import { ManagerGuard } from './application/guards/manager.guard';
 @Module({
   imports: [
     ClsServiceModule,
@@ -60,6 +61,10 @@ import { JwtServiceModule } from './libs/jwt/jwt.module';
     {
       provide: APP_GUARD,
       useClass: UserGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ManagerGuard,
     },
   ],
 })

@@ -21,6 +21,7 @@ export class AdminFactoryService {
   updateAdmin(updateAdminDto: UpdateAdminDto) {
     const newAdmin = new AdminModel();
     newAdmin.name = updateAdminDto.name;
+    newAdmin.email = updateAdminDto.email;
     return newAdmin;
   }
 

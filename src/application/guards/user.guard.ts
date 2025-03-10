@@ -33,7 +33,13 @@ export class UserGuard implements CanActivate {
           'Invalid token. Please login again.',
         );
       }
-      this.cls.set('user', user);
+      this.cls.set('user', {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        password: user.password,
+      });
     }
 
     return true;

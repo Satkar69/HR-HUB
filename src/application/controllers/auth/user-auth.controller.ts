@@ -3,9 +3,11 @@ import { ClsService } from 'nestjs-cls';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { Public } from 'src/application/decorators/public.decorator';
 import { User } from 'src/application/decorators/user.decorator';
-import { AppClsStore } from 'src/common/interface/app-cls-store.interface';
+import {
+  AppClsStore,
+  UserClsData,
+} from 'src/common/interface/app-cls-store.interface';
 import { SigninDto } from 'src/core/dtos/request/signin.dto';
-import { UserEntity } from 'src/frameworks/data-services/pg/entities/user.entity';
 import { UserAuthUseCaseService } from 'src/use-cases/user-use-cases/user-auth/user-auth-use-case-service';
 
 @Controller('/user')
@@ -28,7 +30,6 @@ export class UserAuthController {
   @User()
   @Get('/me')
   async me() {
-    console.log('me');
-    return CoreApiResponse.success(this.cls.get<UserEntity>('user'));
+    return CoreApiResponse.success(this.cls.get<UserClsData>('user'));
   }
 }

@@ -8,6 +8,7 @@ import { IS_ADMIN_KEY } from '../decorators/admin.decorator';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import AppUnauthorizedException from '../exception/app-unauthorized.exception';
 import { IS_USER_KEY } from '../decorators/user.decorator';
+import { IS_MANAGER_KEY } from '../decorators/manager.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -50,9 +51,17 @@ export class AuthGuard implements CanActivate {
         ? true
         : false;
 
+    const isManager = this._reflector.getAllAndOverride<boolean>(
+      IS_MANAGER_KEY,
+      [context.getHandler(), context.getClass()],
+    )
+      ? true
+      : false;
+
     this.cls.set('isPublic', isPublic);
     this.cls.set('isAdmin', isAdmin);
     this.cls.set('isUser', isUser);
+    this.cls.set('isManager', isManager);
 
     if (isPublic) {
       return true;

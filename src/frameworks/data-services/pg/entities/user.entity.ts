@@ -20,31 +20,27 @@ export class UserEntity extends BaseEntity {
   @Column({ default: UserRoleEnum.EMPLOYEE, name: 'role' })
   role: UserRoleEnum;
 
-  @OneToMany(() => TeamEntity, (team) => team.leader, { eager: true })
+  @OneToMany(() => TeamEntity, (team) => team.leader)
   teams: TeamEntity[];
 
-  @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.member, {
-    eager: true,
-  })
+  @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.member)
   teamMemberShips: TeamMemberEntity[];
 
-  @OneToMany(() => ReviewEntity, (review) => review.reviewer, { eager: true })
+  @OneToMany(() => ReviewEntity, (review) => review.reviewer)
   assignedReviews: ReviewEntity[];
 
-  @OneToMany(() => ReviewEntity, (review) => review.reviewee, { eager: true })
+  @OneToMany(() => ReviewEntity, (review) => review.reviewee)
   receivedReviews: ReviewEntity[];
 
   @OneToMany(
     () => PeerNominationEntity,
     (peerNomination) => peerNomination.nominator,
-    { eager: true },
   )
   initiatedPeerNominations: PeerNominationEntity[];
 
   @OneToMany(
     () => PeerNominationEntity,
     (peerNomination) => peerNomination.nominee,
-    { eager: true },
   )
   receivedPeerNominations: PeerNominationEntity[];
 
