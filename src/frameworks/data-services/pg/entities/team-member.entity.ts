@@ -5,7 +5,7 @@ import { UserEntity } from './user.entity';
 
 @Entity('team_member')
 export class TeamMemberEntity extends BaseEntity {
-  @ManyToOne(() => TeamEntity)
+  @ManyToOne(() => TeamEntity, { eager: true })
   @JoinColumn({ name: 'team_id' })
   team: TeamEntity;
 
