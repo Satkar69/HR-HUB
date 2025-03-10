@@ -5,6 +5,7 @@ import { AdminTeamFactoryUseCaseService } from './admin-team-factory-use-case.se
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member/admin-team-member-factory-use-case.service';
 import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
+import AppException from 'src/application/exception/app.exception';
 
 @Injectable()
 export class AdminTeamUseCaseService {
@@ -23,21 +24,20 @@ export class AdminTeamUseCaseService {
     const newTeam =
       this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
 
-    const createdTeam = await this.dataServices.team.create(newTeam);
-
     await Promise.all(
       createTeamDto.members.map(async (member) => {
         const createTeamMemberDto = new CreateTeamMemberDto();
-        createTeamMemberDto.team = createdTeam.id;
+        createTeamMemberDto.team = newTeam.id;
         createTeamMemberDto.member = member;
         const newTeamMember =
           this.adminTeamMemberFactoryUseCaseService.createTeamMember(
             createTeamMemberDto,
           );
-        await this.dataServices.teamMember.create(newTeamMember);
+        return await this.dataServices.teamMember.create(newTeamMember);
       }),
     );
-    return createdTeam;
+
+    return await this.dataServices.team.create(newTeam);
   }
 
   // can remove team members directly while updating the team
