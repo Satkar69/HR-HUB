@@ -6,7 +6,7 @@ import { IDataServices } from 'src/core/abstracts';
 export class AdminTeamMemberUseCaseService {
   constructor(private dataServices: IDataServices) {}
 
-  async getTeamMembers(): Promise<IPaginationData> {
-    return await this.dataServices.teamMember.getAll();
+  async getTeamMembersByTeam(teamId: number): Promise<IPaginationData> {
+    return await this.dataServices.teamMember.getAll({ team: { id: teamId } });
   }
 }
