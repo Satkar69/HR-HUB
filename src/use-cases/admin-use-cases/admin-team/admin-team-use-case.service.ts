@@ -38,7 +38,11 @@ export class AdminTeamUseCaseService {
           this.adminTeamMemberFactoryUseCaseService.createTeamMember(
             createTeamMemberDto,
           );
-        await this.dataServices.teamMember.create(newTeamMember);
+        const newMember =
+          await this.dataServices.teamMember.create(newTeamMember);
+        if (!newMember) {
+          throw new Error('Error while creating team member');
+        }
       }),
     );
     return createdTeam;
