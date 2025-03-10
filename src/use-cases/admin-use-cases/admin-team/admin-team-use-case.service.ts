@@ -4,6 +4,7 @@ import { CreateTeamDto, UpdateTeamDto } from 'src/core/dtos/request/team.dto';
 import { AdminTeamFactoryUseCaseService } from './admin-team-factory-use-case.service';
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member/admin-team-member-factory-use-case.service';
 import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
+import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 
 @Injectable()
 export class AdminTeamUseCaseService {
@@ -12,6 +13,10 @@ export class AdminTeamUseCaseService {
     private adminTeamFactoryUseCaseService: AdminTeamFactoryUseCaseService,
     private adminTeamMemberFactoryUseCaseService: AdminTeamMemberFactoryUseCaseService,
   ) {}
+
+  async getAllTeams(): Promise<IPaginationData> {
+    return await this.dataServices.team.getAll();
+  }
 
   async createTeam(createTeamDto: CreateTeamDto) {
     const newTeam =
@@ -40,6 +45,29 @@ export class AdminTeamUseCaseService {
       team,
       updateTeamDto,
     );
+    const teamMembers =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        team: { id: team.id },
+      });
+    console.log(teamMembers);
+    if (updateTeamDto.members.length !== teamMembers.length) {
+      await Promise.all(
+        updateTeamDto.members.map(async (member) => {
+          if (
+            !teamMembers.find((teamMember) => teamMember.member.id === member)
+          ) {
+            await this.dataServices.teamMember.remove({
+              team: team.id,
+              member: { id: member },
+            });
+          }
+        }),
+      );
+    }
     return await this.dataServices.team.update({ id: team.id }, editedTeam);
+  }
+
+  async deleteTeam(teamId: number) {
+    return await this.dataServices.team.remove({ id: teamId });
   }
 }

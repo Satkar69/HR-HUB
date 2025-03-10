@@ -1,5 +1,15 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
+import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { CreateTeamDto, UpdateTeamDto } from 'src/core/dtos/request/team.dto';
 import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
 import { AdminTeamUseCaseService } from 'src/use-cases/admin-use-cases/admin-team/admin-team-use-case.service';
@@ -15,6 +25,14 @@ export class AdminTeamController {
     );
   }
 
+  @Get('/get-all')
+  async getAllTeams(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.adminTeamUseCaseService.getAllTeams(),
+      query,
+    );
+  }
+
   @Patch('/update/:id')
   async updateTeam(
     @Param('id') teamId: number,
@@ -22,6 +40,13 @@ export class AdminTeamController {
   ) {
     return CoreApiResponse.success(
       await this.adminTeamUseCaseService.updateTeam(teamId, updateTeamDto),
+    );
+  }
+
+  @Delete('/delete/:id')
+  async deleteTeam(@Param('id') teamId: number) {
+    return CoreApiResponse.success(
+      await this.adminTeamUseCaseService.deleteTeam(teamId),
     );
   }
 }
