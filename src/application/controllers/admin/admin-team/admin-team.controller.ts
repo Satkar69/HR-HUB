@@ -25,6 +25,13 @@ export class AdminTeamController {
     );
   }
 
+  @Get('/get/:id')
+  async getTeamById(@Param('id') teamId: number) {
+    return CoreApiResponse.success(
+      await this.adminTeamUseCaseService.getTeambyId(teamId),
+    );
+  }
+
   @Get('/get-all')
   async getAllTeams(@Query() query: IPaginationQuery) {
     return CoreApiResponse.pagination(

@@ -18,6 +18,10 @@ export class AdminTeamUseCaseService {
     return await this.dataServices.team.getAll();
   }
 
+  async getTeambyId(teamId: number) {
+    return await this.dataServices.team.getOne({ id: teamId });
+  }
+
   // add team Members while create teams
   async createTeam(createTeamDto: CreateTeamDto) {
     const newTeam =

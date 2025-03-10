@@ -31,6 +31,10 @@ export class AdminUserUseCaseService {
     user.password = await this.bcryptService.hash(user.password);
     return await this.dataServices.user.create(user);
   }
+  // todo: make corresponding routes in the controller
+  async getUserById(userId: number) {
+    return await this.dataServices.user.getOne({ id: userId });
+  }
 
   async getAllUser(): Promise<IPaginationData> {
     return await this.dataServices.user.getAll();
