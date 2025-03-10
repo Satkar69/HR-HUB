@@ -14,4 +14,20 @@ export class AdminUserController {
       query,
     );
   }
+
+  @Get('/employee/get-all')
+  async getAllEmployeeUser(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.adminUserUseCaseService.getAllEmployees(),
+      query,
+    );
+  }
+
+  @Get('/manager/get-all')
+  async getAllManagerUser(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.adminUserUseCaseService.getAllManagers(),
+      query,
+    );
+  }
 }

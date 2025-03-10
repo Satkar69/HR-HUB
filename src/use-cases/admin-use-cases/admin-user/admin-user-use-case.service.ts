@@ -6,6 +6,7 @@ import { UserModel } from 'src/core/models/user.model';
 import { AdminUserFactoryUseCaseService } from './admin-user-factory-use-case.service';
 import { IBcryptService } from 'src/core/abstracts/adapters/bcrypt.abstract';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
+import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class AdminUserUseCaseService {
@@ -33,5 +34,13 @@ export class AdminUserUseCaseService {
 
   async getAllUser(): Promise<IPaginationData> {
     return await this.dataServices.user.getAll();
+  }
+
+  async getAllEmployees(): Promise<IPaginationData> {
+    return await this.dataServices.user.getAll({ role: UserRoleEnum.EMPLOYEE });
+  }
+
+  async getAllManagers(): Promise<IPaginationData> {
+    return await this.dataServices.user.getAll({ role: UserRoleEnum.MANAGER });
   }
 }
