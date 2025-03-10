@@ -7,6 +7,11 @@ export class TeamUseCaseService {
 
   // todo :: make corresponding routes in the controller
   async getTeambyId(teamId: number) {
-    return await this.dataServices.team.getOne({ id: teamId });
+    const teamMembers =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        team: { id: teamId },
+      });
+    const team = await this.dataServices.team.getOne({ id: teamId });
+    return { ...team, members: teamMembers };
   }
 }

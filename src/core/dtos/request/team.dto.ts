@@ -7,7 +7,7 @@ export class CreateTeamDto {
   @IsNotEmpty()
   @IsString()
   department: string;
-  @IsOptional()
+  @IsNotEmpty()
   members: number[];
 }
 
@@ -18,6 +18,6 @@ export class UpdateTeamDto {
   @IsOptional()
   @IsString()
   department: string;
-  @IsOptional()
+  @IsNotEmpty()
   members: number[];
 }

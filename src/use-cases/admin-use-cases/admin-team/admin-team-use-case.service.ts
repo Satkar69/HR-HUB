@@ -18,10 +18,6 @@ export class AdminTeamUseCaseService {
     return await this.dataServices.team.getAll();
   }
 
-  async getTeambyId(teamId: number) {
-    return await this.dataServices.team.getOne({ id: teamId });
-  }
-
   // add team Members while create teams
   async createTeam(createTeamDto: CreateTeamDto) {
     const newTeam =
@@ -38,11 +34,7 @@ export class AdminTeamUseCaseService {
           this.adminTeamMemberFactoryUseCaseService.createTeamMember(
             createTeamMemberDto,
           );
-        const newMember =
-          await this.dataServices.teamMember.create(newTeamMember);
-        if (!newMember) {
-          throw new Error('Error while creating team member');
-        }
+        await this.dataServices.teamMember.create(newTeamMember);
       }),
     );
     return createdTeam;
