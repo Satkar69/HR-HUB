@@ -18,6 +18,7 @@ export class AdminTeamUseCaseService {
     return await this.dataServices.team.getAll();
   }
 
+  // add team Members while create teams
   async createTeam(createTeamDto: CreateTeamDto) {
     const newTeam =
       this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
@@ -39,6 +40,7 @@ export class AdminTeamUseCaseService {
     return createdTeam;
   }
 
+  // can remove team members directly while updating the team
   async updateTeam(teamId: number, updateTeamDto: UpdateTeamDto) {
     const team = await this.dataServices.team.getOne({ id: teamId });
     const editedTeam = this.adminTeamFactoryUseCaseService.updateTeam(
