@@ -4,12 +4,12 @@ import { UserModel } from 'src/core/models/user.model';
 import { TeamModel } from 'src/core/models/team.model';
 
 @Injectable()
-export class UserTeamFactoryUseCaseService {
-  createTeam(createTeamDto: CreateTeamDto, userId: number) {
+export class AdminTeamFactoryUseCaseService {
+  createTeam(createTeamDto: CreateTeamDto) {
     const team = new TeamModel();
-    if (userId) {
+    if (createTeamDto.leader) {
       const userModel = new UserModel();
-      userModel.id = userId;
+      userModel.id = createTeamDto.leader;
       team.leader = userModel;
     }
     if (createTeamDto.department) team.department = createTeamDto.department;
