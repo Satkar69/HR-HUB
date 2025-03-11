@@ -11,9 +11,9 @@ export class QuestionnaireEntity extends BaseEntity {
   @Column({ name: 'question', nullable: false })
   question: string;
 
-  @Column({ name: 'answers', nullable: false, array: true })
+  @Column({ name: 'answers', nullable: true, array: true })
   answer: string;
 
-  @Column({ name: 'ratings', nullable: false })
+  @Column({ name: 'ratings', nullable: true })
   ratings: number;
 }

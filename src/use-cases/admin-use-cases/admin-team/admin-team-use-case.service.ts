@@ -1,11 +1,9 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IDataServices } from 'src/core/abstracts';
 import { CreateTeamDto, UpdateTeamDto } from 'src/core/dtos/request/team.dto';
 import { AdminTeamFactoryUseCaseService } from './admin-team-factory-use-case.service';
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member/admin-team-member-factory-use-case.service';
-import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
-import AppException from 'src/application/exception/app.exception';
 
 @Injectable()
 export class AdminTeamUseCaseService {
@@ -54,16 +52,20 @@ export class AdminTeamUseCaseService {
 
     // Prepare all team member objects in one go
     const teamMembers = [];
-    createTeamDto.members.map((memberId) =>
-      teamMembers.push(
-        this.adminTeamMemberFactoryUseCaseService.createTeamMember({
-          team: createdTeam.id,
-          member: memberId,
-        }),
-      ),
-    ),
+    if (createTeamDto.members.length > 0) {
+      await Promise.all(
+        createTeamDto.members.map((memberId) =>
+          teamMembers.push(
+            this.adminTeamMemberFactoryUseCaseService.createTeamMember({
+              team: createdTeam.id,
+              member: memberId,
+            }),
+          ),
+        ),
+      );
       // Bulk insert all team members in one database operation
       await this.dataServices.teamMember.createBulk(teamMembers);
+    }
 
     return createdTeam;
   }

@@ -5,6 +5,7 @@ import { DataServicesModule } from 'src/services/data-services/data-services.mod
 import { ClsModule } from 'nestjs-cls';
 import { UserTeamMemberUseCaseModule } from './user-team/user-team-member/user-team-member-use-case.module';
 import { UserUseCaseService } from './user-use-case-service';
+import { UserReviewUseCaseModule } from './user-review/user-review-use-case.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserUseCaseService } from './user-use-case-service';
     UserAuthUseCaseModule,
     UserTeamUseCaseModule,
     UserTeamMemberUseCaseModule,
+    UserReviewUseCaseModule,
   ],
   providers: [UserUseCaseService],
   exports: [
@@ -20,6 +22,7 @@ import { UserUseCaseService } from './user-use-case-service';
     UserAuthUseCaseModule,
     UserTeamUseCaseModule,
     UserTeamMemberUseCaseModule,
+    UserReviewUseCaseModule,
   ],
 })
 export class UserUseCaseModule {}
