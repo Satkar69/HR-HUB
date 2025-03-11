@@ -51,8 +51,8 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
     @Inject(PeerNominationEntity.REPOSITORY)
     private peerNominationRepository: Repository<PeerNominationEntity>,
 
-    // @Inject(QuestionnaireEntity.REPOSITORY)
-    // private questionnaireRepository: Repository<QuestionnaireEntity>,
+    @Inject(QuestionnaireEntity.REPOSITORY)
+    private questionnaireRepository: Repository<QuestionnaireEntity>,
 
     private readonly cls: IClsStore<AppClsStore>,
     @Inject(InjectableString.APP_DATA_SOURCE)
@@ -73,9 +73,9 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
       this.cls,
       this.peerNominationRepository,
     );
-    // this.questionnaire = new PgGenericRepository(
-    //   this.cls,
-    //   this.questionnaireRepository,
-    // );
+    this.questionnaire = new PgGenericRepository(
+      this.cls,
+      this.questionnaireRepository,
+    );
   }
 }

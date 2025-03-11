@@ -53,13 +53,13 @@ const providers = [
     },
     inject: [InjectableString.APP_DATA_SOURCE],
   },
-  // {
-  //   provide: QuestionnaireEntity.REPOSITORY,
-  //   useFactory: (dataSource: DataSource) => {
-  //     return dataSource.getRepository(QuestionnaireEntity);
-  //   },
-  //   inject: [InjectableString.APP_DATA_SOURCE],
-  // },
+  {
+    provide: QuestionnaireEntity.REPOSITORY,
+    useFactory: (dataSource: DataSource) => {
+      return dataSource.getRepository(QuestionnaireEntity);
+    },
+    inject: [InjectableString.APP_DATA_SOURCE],
+  },
 ];
 
 export default providers;

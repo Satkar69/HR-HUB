@@ -15,5 +15,5 @@ export abstract class IDataServices {
   abstract teamMember: IGenericRepository<TeamMemberModel>;
   abstract review: IGenericRepository<ReviewModel>;
   abstract peerNomination: IGenericRepository<PeerNominationModel>;
-  // abstract questionnaire: IGenericRepository<QuestionnaireModel>;
+  abstract questionnaire: IGenericRepository<QuestionnaireModel>;
 }
