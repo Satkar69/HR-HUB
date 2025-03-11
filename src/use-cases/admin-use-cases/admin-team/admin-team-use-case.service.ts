@@ -23,11 +23,11 @@ export class AdminTeamUseCaseService {
   async createTeam(createTeamDto: CreateTeamDto) {
     const newTeam =
       this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
-
+    const createdTeam = await this.dataServices.team.create(newTeam);
     await Promise.all(
       createTeamDto.members.map(async (member) => {
         const createTeamMemberDto = new CreateTeamMemberDto();
-        createTeamMemberDto.team = newTeam.id;
+        createTeamMemberDto.team = createdTeam.id;
         createTeamMemberDto.member = member;
         const newTeamMember =
           this.adminTeamMemberFactoryUseCaseService.createTeamMember(
@@ -37,7 +37,7 @@ export class AdminTeamUseCaseService {
       }),
     );
 
-    return await this.dataServices.team.create(newTeam);
+    return createdTeam;
   }
 
   // can remove team members directly while updating the team

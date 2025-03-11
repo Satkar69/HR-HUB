@@ -8,6 +8,8 @@ import { IBcryptService } from 'src/core/abstracts/adapters/bcrypt.abstract';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
+// todo :: make seperate get api to get employees and manager who are not assigned to any team yet
+
 @Injectable()
 export class AdminUserUseCaseService {
   constructor(
@@ -31,7 +33,7 @@ export class AdminUserUseCaseService {
     user.password = await this.bcryptService.hash(user.password);
     return await this.dataServices.user.create(user);
   }
-  // todo: make corresponding routes in the controller
+
   async getUserById(userId: number) {
     const assignedTeam = await this.dataServices.team.getOneOrNull({
       leader: { id: userId },
@@ -49,6 +51,20 @@ export class AdminUserUseCaseService {
       assignedTeam,
       teamMemberships,
     };
+  }
+
+  async getAllNonTeamEmployees() {
+    const assignedMembers =
+      await this.dataServices.teamMember.getAllWithoutPagination();
+    const employees = await this.dataServices.user.getAllWithoutPagination({
+      role: UserRoleEnum.EMPLOYEE,
+    });
+    const nonAssignedEmployees = employees.filter((employee) => {
+      return !assignedMembers.some(
+        (assignedMember) => assignedMember.member.id === employee.id,
+      );
+    });
+    return nonAssignedEmployees;
   }
 
   async getAllUser(): Promise<IPaginationData> {

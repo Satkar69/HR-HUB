@@ -30,6 +30,13 @@ export class AdminUserController {
     );
   }
 
+  @Get('/employee/non-team/get-all')
+  async getAllNonTeamEmployeeUsers() {
+    return CoreApiResponse.success(
+      await this.adminUserUseCaseService.getAllNonTeamEmployees(),
+    );
+  }
+
   @Get('/manager/get-all')
   async getAllManagerUser(@Query() query: IPaginationQuery) {
     return CoreApiResponse.pagination(
