@@ -4,7 +4,7 @@ import { ReviewEntity } from './review.entity';
 
 @Entity('questionnaires')
 export class QuestionnaireEntity extends BaseEntity {
-  @ManyToOne(() => ReviewEntity)
+  @ManyToOne(() => ReviewEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'review_id' })
   review: ReviewEntity;
 

@@ -23,10 +23,6 @@ export class UserReviewUseCaseService {
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
-  async getReviewById(reviewId: number) {
-    return await this.dataServices.review.getOne({ id: reviewId });
-  }
-
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
 
@@ -57,7 +53,7 @@ export class UserReviewUseCaseService {
     });
     const questionnaires = await Promise.all(
       questions.map(async (question) => {
-        const questionnaireDto = new createQuestionnaireDto(); // Create a new DTO for each iteration
+        const questionnaireDto = new createQuestionnaireDto();
         questionnaireDto.review = createdReview.id;
         questionnaireDto.question = question.questionText;
         return this.questionnaireFactroyUseCaseService.createQuestionnaire(

@@ -4,6 +4,7 @@ import { AdminControllerModule } from './admin/admin-controller.module';
 import { UserControllerModule } from './user/user-controller.module';
 import { TeamControllerModule } from './team/team-controller.module';
 import { TeamMemberControllerModule } from './team-member/team-member-controller.module';
+import { ReviewControllerModule } from './review/review-controller.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TeamMemberControllerModule } from './team-member/team-member-controller
     UserControllerModule,
     TeamControllerModule,
     TeamMemberControllerModule,
+    ReviewControllerModule,
   ],
   exports: [
     AuthControllerModule,
@@ -19,6 +21,7 @@ import { TeamMemberControllerModule } from './team-member/team-member-controller
     UserControllerModule,
     TeamControllerModule,
     TeamMemberControllerModule,
+    ReviewControllerModule,
   ],
 })
 export class ControllerModule {}

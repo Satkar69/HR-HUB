@@ -34,9 +34,12 @@ export class ReviewEntity extends BaseEntity {
   @Column({ name: 'progress_status' })
   progressStatus: ReviewProgressStatusEnum;
 
-  @OneToOne(() => QuestionnaireEntity, { cascade: true, eager: true })
-  @JoinColumn({ name: 'questionnaire_id' })
-  questionnaire: QuestionnaireEntity;
+  @OneToMany(
+    () => QuestionnaireEntity,
+    (questionnaire) => questionnaire.review,
+    { eager: true },
+  )
+  questionnaire: QuestionnaireEntity[];
 
   @Column({ name: 'due_date' })
   dueDate: Date;
