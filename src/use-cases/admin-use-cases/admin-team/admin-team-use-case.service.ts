@@ -79,6 +79,6 @@ export class AdminTeamUseCaseService {
   }
 
   async deleteTeam(teamId: number) {
-    return await this.dataServices.team.remove({ id: teamId });
+    return await this.dataServices.team.delete({ id: teamId });
   }
 }

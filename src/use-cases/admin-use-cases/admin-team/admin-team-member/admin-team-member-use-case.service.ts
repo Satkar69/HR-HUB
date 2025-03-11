@@ -28,7 +28,7 @@ export class AdminTeamMemberUseCaseService {
       id: teamMemberId,
     });
 
-    const deletedTeamMember = await this.dataServices.teamMember.remove({
+    const deletedTeamMember = await this.dataServices.teamMember.delete({
       id: teamMember.id,
     });
     return deletedTeamMember;

@@ -173,4 +173,13 @@ export class PgGenericRepository<T> implements IGenericRepository<T> {
       return this._repository.softRemove(event);
     });
   }
+  async delete(
+    condition: NonNullable<unknown>,
+    relations?: NonNullable<unknown>,
+  ): Promise<any> {
+    return rescue<any>(async (): Promise<any> => {
+      const event = await this.getAllWithoutPagination(condition, relations);
+      return this._repository.remove(event);
+    });
+  }
 }
