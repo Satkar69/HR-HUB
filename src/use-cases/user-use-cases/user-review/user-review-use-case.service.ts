@@ -74,4 +74,29 @@ export class UserReviewUseCaseService {
     await this.dataServices.questionnaire.createBulk(questionnaires);
     return createdReview;
   }
+
+  async submitSelfReviewById(reviewId: number, reviewDto: ReviewDto) {
+    const review = await this.dataServices.review.getOne({ id: reviewId });
+    const reviewQuestionnaires =
+      await this.dataServices.questionnaire.getAllWithoutPagination({
+        review: review.id,
+      });
+    const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
+      return questionnaire.answers.length === 0;
+    });
+    if (isIncompleteAnswers) {
+      throw new AppException(
+        { message: `You have some incomplete answers` },
+        'You have some incomplete answers',
+        400,
+      );
+    }
+    const updatedReview =
+      this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
+    updatedReview.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
+    return await this.dataServices.review.update(
+      { id: review.id },
+      updatedReview,
+    );
+  }
 }

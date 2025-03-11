@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { ReviewDto } from 'src/core/dtos/request/review.dto';
@@ -22,6 +30,19 @@ export class UserReviewController {
   async createSelfReview(@Body() reviewDto: ReviewDto) {
     return CoreApiResponse.success(
       await this.userReviewUseCaseService.createSelfReview(reviewDto),
+    );
+  }
+
+  @Patch('/self/submit/:id')
+  async submitSelfReview(
+    @Param('id') reviewId: number,
+    @Body() reviewDto: ReviewDto,
+  ) {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.submitSelfReviewById(
+        reviewId,
+        reviewDto,
+      ),
     );
   }
 }

@@ -25,4 +25,10 @@ export class ReviewFactoryUseCaseService {
     if (reviewDto.dueDate) review.dueDate = reviewDto.dueDate;
     return review;
   }
+  updateReviewProgessStatus(reviewDto: ReviewDto) {
+    const review = new ReviewModel();
+    if (reviewDto.progressStatus)
+      review.progressStatus = reviewDto.progressStatus;
+    return review;
+  }
 }

@@ -3,7 +3,6 @@ import { IDataServices } from 'src/core/abstracts';
 import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
 import { UserReviewQuestionnaireFactoryUseCaseService } from './user-review-questionnaire-factory-use-case.service';
 import AppException from 'src/application/exception/app.exception';
-import { QuestionnaireModel } from 'src/core/models/questionnaire.model';
 
 @Injectable()
 export class UserReviewQuestionnaireUseCaseService {

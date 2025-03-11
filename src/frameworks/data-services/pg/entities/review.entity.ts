@@ -39,7 +39,7 @@ export class ReviewEntity extends BaseEntity {
     (questionnaire) => questionnaire.review,
     { eager: true },
   )
-  questionnaire: QuestionnaireEntity[];
+  questionnaires: QuestionnaireEntity[];
 
   @Column({ name: 'due_date' })
   dueDate: Date;
