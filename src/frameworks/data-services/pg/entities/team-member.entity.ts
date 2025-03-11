@@ -13,7 +13,4 @@ export class TeamMemberEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'user_id' })
   member: UserEntity;
-
-  @Column({ name: 'is_leader', default: false })
-  isLeader: boolean;
 }

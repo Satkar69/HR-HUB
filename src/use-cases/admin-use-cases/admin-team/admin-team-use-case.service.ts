@@ -27,7 +27,6 @@ export class AdminTeamUseCaseService {
     // const createManagerMembership = new CreateTeamMemberDto();
     // createManagerMembership.team = createdTeam.id;
     // createManagerMembership.member = createTeamDto.leader;
-    // createManagerMembership.isLeader = true;
     // const newManagerMembership =
     //   this.adminTeamMemberFactoryUseCaseService.createTeamMember(
     //     createManagerMembership,
@@ -54,27 +53,29 @@ export class AdminTeamUseCaseService {
     const createdTeam = await this.dataServices.team.create(newTeam);
 
     // Prepare all team member objects in one go
-    const teamMembers = [
-      // Leader membership
-      this.adminTeamMemberFactoryUseCaseService.createTeamMember({
-        team: createdTeam.id,
-        member: createTeamDto.leader,
-        isLeader: true,
-      }),
-      // Regular members
-      ...createTeamDto.members.map((memberId) =>
+    const teamMembers = [];
+    createTeamDto.members.map((memberId) =>
+      teamMembers.push(
         this.adminTeamMemberFactoryUseCaseService.createTeamMember({
           team: createdTeam.id,
           member: memberId,
-          isLeader: false,
         }),
       ),
-    ];
-
-    // Bulk insert all team members in one database operation
-    await this.dataServices.teamMember.createBulk(teamMembers);
+    ),
+      // Bulk insert all team members in one database operation
+      await this.dataServices.teamMember.createBulk(teamMembers);
 
     return createdTeam;
+  }
+
+  // can remove team members directly while updating the team
+  async updateTeam(teamId: number, updateTeamDto: UpdateTeamDto) {
+    const team = await this.dataServices.team.getOne({ id: teamId });
+    const editedTeam = this.adminTeamFactoryUseCaseService.updateTeam(
+      team,
+      updateTeamDto,
+    );
+    return await this.dataServices.team.update({ id: team.id }, editedTeam);
   }
 
   async deleteTeam(teamId: number) {

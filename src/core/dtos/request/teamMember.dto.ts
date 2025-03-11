@@ -7,7 +7,4 @@ export class CreateTeamMemberDto {
   @IsNotEmpty()
   @IsNumber()
   member: number;
-  @IsOptional()
-  @IsBoolean()
-  isLeader: boolean;
 }

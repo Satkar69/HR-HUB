@@ -18,6 +18,4 @@ export class UpdateTeamDto {
   @IsOptional()
   @IsString()
   department: string;
-  @IsOptional()
-  members: number[];
 }

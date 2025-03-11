@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AdminTeamMemberUseCaseService } from 'src/use-cases/admin-use-cases/admin-team/admin-team-member/admin-team-member-use-case.service';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
@@ -27,6 +35,13 @@ export class AdminTeamMemberController {
       await this.adminTeamMemberUseCaseService.addTeamMember(
         createTeamMemberDto,
       ),
+    );
+  }
+
+  @Delete('/member/delete/:id')
+  async deleteTeamMember(@Param('id') teamMemberId: number) {
+    return CoreApiResponse.success(
+      await this.adminTeamMemberUseCaseService.removeTeamMember(teamMemberId),
     );
   }
 }

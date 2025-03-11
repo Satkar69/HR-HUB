@@ -3,7 +3,6 @@ import { IPaginationData } from 'src/common/interface/response/interface/respons
 import { IDataServices } from 'src/core/abstracts';
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member-factory-use-case.service';
 import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
-import { TeamMemberModel } from 'src/core/models/team-member.model';
 
 @Injectable()
 export class AdminTeamMemberUseCaseService {
@@ -28,6 +27,10 @@ export class AdminTeamMemberUseCaseService {
     const teamMember = await this.dataServices.teamMember.getOne({
       id: teamMemberId,
     });
-    return await this.dataServices.teamMember.remove(teamMember);
+
+    const deletedTeamMember = await this.dataServices.teamMember.remove({
+      id: teamMember.id,
+    });
+    return deletedTeamMember;
   }
 }

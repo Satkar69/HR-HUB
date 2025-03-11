@@ -68,17 +68,12 @@ export class AdminUserUseCaseService {
   }
 
   async getAllNonTeamManagers() {
-    const assignedManagers =
-      await this.dataServices.teamMember.getAllWithoutPagination({
-        isLeader: true,
-      });
+    const teams = await this.dataServices.team.getAllWithoutPagination({});
     const managers = await this.dataServices.user.getAllWithoutPagination({
       role: UserRoleEnum.MANAGER,
     });
     const nonAssignedManagers = managers.filter((manager) => {
-      return !assignedManagers.some(
-        (assignedManager) => assignedManager.member.id === manager.id,
-      );
+      return !teams.some((team) => team.leader.id === manager.id);
     });
     return nonAssignedManagers;
   }
