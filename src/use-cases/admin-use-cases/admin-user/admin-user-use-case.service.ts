@@ -68,7 +68,7 @@ export class AdminUserUseCaseService {
   }
 
   async getAllNonTeamManagers() {
-    const teams = await this.dataServices.team.getAllWithoutPagination({});
+    const teams = await this.dataServices.team.getAllWithoutPagination();
     const managers = await this.dataServices.user.getAllWithoutPagination({
       role: UserRoleEnum.MANAGER,
     });
