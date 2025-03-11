@@ -19,6 +19,8 @@ export class AdminTeamMemberFactoryUseCaseService {
       userModel.id = createTeamMemberDto.member;
       teamMember.member = userModel;
     }
+    if (createTeamMemberDto.isLeader)
+      teamMember.isLeader = createTeamMemberDto.isLeader;
 
     return teamMember;
   }

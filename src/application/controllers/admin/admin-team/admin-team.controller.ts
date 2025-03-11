@@ -32,16 +32,6 @@ export class AdminTeamController {
     );
   }
 
-  @Patch('/update/:id')
-  async updateTeam(
-    @Param('id') teamId: number,
-    @Body() updateTeamDto: UpdateTeamDto,
-  ) {
-    return CoreApiResponse.success(
-      await this.adminTeamUseCaseService.updateTeam(teamId, updateTeamDto),
-    );
-  }
-
   @Delete('/delete/:id')
   async deleteTeam(@Param('id') teamId: number) {
     return CoreApiResponse.success(
