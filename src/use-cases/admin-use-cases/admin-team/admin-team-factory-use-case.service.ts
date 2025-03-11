@@ -16,6 +16,11 @@ export class AdminTeamFactoryUseCaseService {
     return team;
   }
   updateTeam(team: TeamModel, updateTeamDto: UpdateTeamDto) {
+    if (updateTeamDto.leader) {
+      const userModel = new UserModel();
+      userModel.id = updateTeamDto.leader;
+      team.leader = userModel;
+    }
     if (updateTeamDto.department) team.department = updateTeamDto.department;
     return team;
   }
