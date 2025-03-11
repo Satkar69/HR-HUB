@@ -12,6 +12,7 @@ import {
 } from 'src/common/interface/app-cls-store.interface';
 import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
+import AppException from 'src/application/exception/app.exception';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -28,6 +29,22 @@ export class UserReviewUseCaseService {
 
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
+
+    const inCompleteSelfReviews =
+      await this.dataServices.review.getAllWithoutPagination({
+        reviewee: userId,
+        progressStatus:
+          ReviewProgressStatusEnum.PENDING ||
+          ReviewProgressStatusEnum.SUBMITTED,
+      });
+    if (inCompleteSelfReviews.length > 0) {
+      throw new AppException(
+        { message: `You have already have an incomplete review` },
+        'You have already have an incomplete review',
+        409,
+      );
+    }
+
     const newReview = this.reviewFactoryUseCaseService.createReview({
       ...reviewDto,
       reviewType: ReviewTypeEnum.SELF,
