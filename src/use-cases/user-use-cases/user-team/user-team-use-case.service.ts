@@ -14,15 +14,10 @@ export class UserTeamUseCaseService {
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
-  async getMyTeam() {
+  // todo :: handle role based data response
+
+  async getMyTeam(): Promise<TeamModel> {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const myTeam = await this.dataServices.team.getOne({
-      leader: { id: userId },
-    });
-    const myTeamMembers =
-      await this.dataServices.teamMember.getAllWithoutPagination({
-        team: { id: myTeam.id },
-      });
-    return { ...myTeam, members: myTeamMembers };
+    return await this.dataServices.team.getOne({ leader: { id: userId } });
   }
 }
