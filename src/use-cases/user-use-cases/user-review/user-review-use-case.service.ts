@@ -13,6 +13,7 @@ import {
 import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import AppException from 'src/application/exception/app.exception';
+import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -22,6 +23,15 @@ export class UserReviewUseCaseService {
     private questionnaireFactroyUseCaseService: QuestionnaireFactoryUseCaseService,
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
+
+  async getMySelfReviews(): Promise<IPaginationData> {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    return await this.dataServices.review.getAll({
+      reviewer: userId,
+      reviewee: userId,
+      reviewType: ReviewTypeEnum.SELF,
+    });
+  }
 
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
