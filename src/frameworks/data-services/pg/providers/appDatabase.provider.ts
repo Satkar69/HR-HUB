@@ -4,12 +4,15 @@ import InjectableString from 'src/common/injectable.string';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AdminEntity } from '../entities/admin.entity';
 import { AdminSeeder } from '../seeder/admin.seeder';
+import { QuestionSeeder } from '../seeder/question.seeder';
+import { QuestionEntity } from '../entities/question.entity';
 
 export const appDataSourceProviders = [
   {
     provide: InjectableString.APP_DATA_SOURCE,
     useFactory: async (
       adminSeeder: AdminSeeder,
+      questionSeeder: QuestionSeeder,
       config: EnvironmentConfigService,
     ) => {
       try {
@@ -33,12 +36,13 @@ export const appDataSourceProviders = [
         );
         await appDataSource.initialize();
         adminSeeder.seed(appDataSource.getRepository(AdminEntity));
+        questionSeeder.seed(appDataSource.getRepository(QuestionEntity));
         return appDataSource;
       } catch (error) {
         Logger.log(error, 'appDataSourceProviders');
         throw new HttpException(error.message, error.status);
       }
     },
-    inject: [AdminSeeder, EnvironmentConfigService],
+    inject: [AdminSeeder, QuestionSeeder, EnvironmentConfigService],
   },
 ];

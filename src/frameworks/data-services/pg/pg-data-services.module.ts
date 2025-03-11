@@ -6,6 +6,7 @@ import providers from './providers';
 import { AdminSeeder } from './seeder/admin.seeder';
 import { EnvironmentConfigModule } from 'src/application/config/environment-config.module';
 import { ClsServiceModule } from 'src/libs/cls-store/cls-store.module';
+import { QuestionSeeder } from './seeder/question.seeder';
 
 @Module({
   imports: [EnvironmentConfigModule, ClsServiceModule],
@@ -19,6 +20,10 @@ import { ClsServiceModule } from 'src/libs/cls-store/cls-store.module';
     {
       provide: AdminSeeder,
       useClass: AdminSeeder,
+    },
+    {
+      provide: QuestionSeeder,
+      useClass: QuestionSeeder,
     },
   ],
   exports: [...appDataSourceProviders, IDataServices],
