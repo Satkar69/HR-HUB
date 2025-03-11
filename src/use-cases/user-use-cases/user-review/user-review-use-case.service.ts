@@ -44,7 +44,6 @@ export class UserReviewUseCaseService {
         409,
       );
     }
-
     const newReview = this.reviewFactoryUseCaseService.createReview({
       ...reviewDto,
       reviewType: ReviewTypeEnum.SELF,

@@ -10,7 +10,10 @@ import {
 import { AdminTeamMemberUseCaseService } from 'src/use-cases/admin-use-cases/admin-team/admin-team-member/admin-team-member-use-case.service';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
-import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
+import {
+  AddTeamMembersDto,
+  CreateTeamMemberDto,
+} from 'src/core/dtos/request/teamMember.dto';
 
 @Controller('/team')
 export class AdminTeamMemberController {
@@ -30,11 +33,9 @@ export class AdminTeamMemberController {
   }
 
   @Post('/member/create')
-  async createTeamMember(@Body() createTeamMemberDto: CreateTeamMemberDto) {
+  async createTeamMember(@Body() addTeamMembersDto: AddTeamMembersDto) {
     return CoreApiResponse.success(
-      await this.adminTeamMemberUseCaseService.addTeamMember(
-        createTeamMemberDto,
-      ),
+      await this.adminTeamMemberUseCaseService.addTeamMember(addTeamMembersDto),
     );
   }
 

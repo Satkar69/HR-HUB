@@ -53,18 +53,16 @@ export class AdminTeamUseCaseService {
     // Prepare all team member objects in one go
     const teamMembers = [];
     if (createTeamDto.members.length > 0) {
-      await Promise.all(
-        createTeamDto.members.map((memberId) =>
-          teamMembers.push(
-            this.adminTeamMemberFactoryUseCaseService.createTeamMember({
-              team: createdTeam.id,
-              member: memberId,
-            }),
-          ),
+      createTeamDto.members.map((memberId) =>
+        teamMembers.push(
+          this.adminTeamMemberFactoryUseCaseService.createTeamMember({
+            team: createdTeam.id,
+            member: memberId,
+          }),
         ),
-      );
-      // Bulk insert all team members in one database operation
-      await this.dataServices.teamMember.createBulk(teamMembers);
+      ),
+        // Bulk insert all team members in one database operation
+        await this.dataServices.teamMember.createBulk(teamMembers);
     }
 
     return createdTeam;

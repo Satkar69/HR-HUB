@@ -5,6 +5,13 @@ export class CreateTeamMemberDto {
   @IsNumber()
   team: number;
   @IsNotEmpty()
-  @IsNumber()
   member: number;
+}
+
+export class AddTeamMembersDto {
+  @IsNotEmpty()
+  @IsNumber()
+  team: number;
+  @IsNotEmpty()
+  members: number[];
 }
