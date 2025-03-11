@@ -14,8 +14,8 @@ export class QuestionnaireFactoryUseCaseService {
     }
     if (createQuestionnaireDto.question)
       questionnaire.question = createQuestionnaireDto.question;
-    if (createQuestionnaireDto.answer)
-      questionnaire.answer = createQuestionnaireDto.answer;
+    if (createQuestionnaireDto.answers)
+      questionnaire.answers = createQuestionnaireDto.answers;
     if (createQuestionnaireDto.ratings)
       questionnaire.ratings = createQuestionnaireDto.ratings;
     return questionnaire;

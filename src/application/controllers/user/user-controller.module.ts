@@ -4,6 +4,7 @@ import { UserUseCaseModule } from 'src/use-cases/user-use-cases/user-use-case-mo
 import { UserTeamMemberController } from './user-team/user-team-member/user-team-member-controller';
 import { UserController } from './user-controller';
 import { UserReviewController } from './user-review/user-review.controller';
+import { UserReviewQuestionnaireController } from './user-review/user-review-questionnaire/user-review-questionnaire.controller';
 
 @Module({
   imports: [UserUseCaseModule],
@@ -12,6 +13,7 @@ import { UserReviewController } from './user-review/user-review.controller';
     UserTeamController,
     UserTeamMemberController,
     UserReviewController,
+    UserReviewQuestionnaireController,
   ],
 })
 export class UserControllerModule {}

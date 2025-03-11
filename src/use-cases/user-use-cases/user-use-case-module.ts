@@ -6,6 +6,7 @@ import { ClsModule } from 'nestjs-cls';
 import { UserTeamMemberUseCaseModule } from './user-team/user-team-member/user-team-member-use-case.module';
 import { UserUseCaseService } from './user-use-case-service';
 import { UserReviewUseCaseModule } from './user-review/user-review-use-case.module';
+import { UserReviewQuestionnaireUseCaseModule } from './user-review/user-review-questionnaire/user-review-questionnaire-use-case.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserReviewUseCaseModule } from './user-review/user-review-use-case.modu
     UserTeamUseCaseModule,
     UserTeamMemberUseCaseModule,
     UserReviewUseCaseModule,
+    UserReviewQuestionnaireUseCaseModule,
   ],
   providers: [UserUseCaseService],
   exports: [
@@ -23,6 +25,7 @@ import { UserReviewUseCaseModule } from './user-review/user-review-use-case.modu
     UserTeamUseCaseModule,
     UserTeamMemberUseCaseModule,
     UserReviewUseCaseModule,
+    UserReviewQuestionnaireUseCaseModule,
   ],
 })
 export class UserUseCaseModule {}
