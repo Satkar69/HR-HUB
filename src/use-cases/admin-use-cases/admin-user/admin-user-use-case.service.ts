@@ -54,17 +54,33 @@ export class AdminUserUseCaseService {
   }
 
   async getAllNonTeamEmployees() {
-    const assignedMembers =
+    const assignedEmployees =
       await this.dataServices.teamMember.getAllWithoutPagination();
     const employees = await this.dataServices.user.getAllWithoutPagination({
       role: UserRoleEnum.EMPLOYEE,
     });
     const nonAssignedEmployees = employees.filter((employee) => {
-      return !assignedMembers.some(
-        (assignedMember) => assignedMember.member.id === employee.id,
+      return !assignedEmployees.some(
+        (assignedEmployee) => assignedEmployee.member.id === employee.id,
       );
     });
     return nonAssignedEmployees;
+  }
+
+  async getAllNonTeamManagers() {
+    const assignedManagers =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        isLeader: true,
+      });
+    const managers = await this.dataServices.user.getAllWithoutPagination({
+      role: UserRoleEnum.MANAGER,
+    });
+    const nonAssignedManagers = managers.filter((manager) => {
+      return !assignedManagers.some(
+        (assignedManager) => assignedManager.member.id === manager.id,
+      );
+    });
+    return nonAssignedManagers;
   }
 
   async getAllUser(): Promise<IPaginationData> {
