@@ -5,7 +5,6 @@ import {
   AppClsStore,
   UserClsData,
 } from 'src/common/interface/app-cls-store.interface';
-import { TeamModel } from 'src/core/models/team.model';
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
 @Injectable()
