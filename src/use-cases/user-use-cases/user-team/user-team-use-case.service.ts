@@ -15,8 +15,6 @@ export class UserTeamUseCaseService {
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
-  // todo :: handle role based data response
-
   async getMyTeam() {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const user = await this.dataServices.user.getOne({ id: userId });
