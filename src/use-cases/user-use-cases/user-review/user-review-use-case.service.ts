@@ -27,10 +27,34 @@ export class UserReviewUseCaseService {
   async getMySelfReviews(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
     return await this.dataServices.review.getAll({
-      reviewer: userId,
-      reviewee: userId,
+      reviewer: { id: userId },
+      reviewee: { id: userId },
       reviewType: ReviewTypeEnum.SELF,
     });
+  }
+
+  async getMyTeamSelfReviews() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const myTeam = await this.dataServices.team.getOne({
+      leader: { id: userId },
+    });
+    const myTeamMembers =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        team: { id: myTeam.id },
+      });
+    // First get all reviews, including nulls
+    const reviewPromises = await Promise.all(
+      myTeamMembers.map(async (teamMember) => {
+        return await this.dataServices.review.getOneOrNull({
+          reviewer: { id: teamMember.member.id },
+          reviewType: ReviewTypeEnum.SELF,
+        });
+      }),
+    );
+    // Then filter out the nulls
+    const selfReviews = reviewPromises.filter((review) => review !== null);
+
+    return selfReviews;
   }
 
   async createSelfReview(reviewDto: ReviewDto) {
@@ -38,10 +62,15 @@ export class UserReviewUseCaseService {
 
     const inCompleteSelfReviews =
       await this.dataServices.review.getAllWithoutPagination({
-        reviewee: userId,
-        progressStatus:
-          ReviewProgressStatusEnum.PENDING ||
-          ReviewProgressStatusEnum.SUBMITTED,
+        reviewer: { id: userId },
+        reviewee: { id: userId },
+        progressStatus: {
+          $in: [
+            ReviewProgressStatusEnum.PENDING,
+            ReviewProgressStatusEnum.SUBMITTED,
+          ],
+        },
+        reviewType: ReviewTypeEnum.SELF,
       });
     if (inCompleteSelfReviews.length > 0) {
       throw new AppException(

@@ -8,6 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
+import { Manager } from 'src/application/decorators/manager.decorator';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { ReviewDto } from 'src/core/dtos/request/review.dto';
 import { UserReviewUseCaseService } from 'src/use-cases/user-use-cases/user-review/user-review-use-case.service';
@@ -18,7 +19,7 @@ export class UserReviewController {
     private readonly userReviewUseCaseService: UserReviewUseCaseService,
   ) {}
 
-  @Get('/self/get-all')
+  @Get('/my/self/get-all')
   async getMySelfReviews(@Query() query: IPaginationQuery) {
     return CoreApiResponse.pagination(
       await this.userReviewUseCaseService.getMySelfReviews(),
@@ -43,6 +44,14 @@ export class UserReviewController {
         reviewId,
         reviewDto,
       ),
+    );
+  }
+
+  @Manager()
+  @Get('/my-team/self/get-all')
+  async getMyTeamMembersSelfReviews() {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.getMyTeamSelfReviews(),
     );
   }
 }
