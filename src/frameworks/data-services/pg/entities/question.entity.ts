@@ -7,6 +7,9 @@ export class QuestionEntity extends BaseEntity {
   @Column({ name: 'question_type' })
   questionType: QuestionTypeEnum;
 
-  @Column('jsonb', { name: 'question', nullable: false, default: [] })
-  question: { questionId: number; questionText: string }[];
+  @Column({ name: 'question_id', nullable: false })
+  questionId: number;
+
+  @Column({ name: 'question_text', nullable: false })
+  questionText: string;
 }

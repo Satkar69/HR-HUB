@@ -5,5 +5,4 @@ export class TeamMemberModel {
   id: number;
   team: TeamModel;
   member: UserModel;
-  isLeader: boolean;
 }

@@ -33,13 +33,29 @@ export abstract class IGenericRepository<T> {
 
   abstract update(condition: keyValueObj, item: T): Promise<T>;
 
-  abstract findOrCreate(condition: keyValueObj, item: T, relations?: RelationType): Promise<T>;
+  abstract findOrCreate(
+    condition: keyValueObj,
+    item: T,
+    relations?: RelationType,
+  ): Promise<T>;
 
-  abstract createOrUpdate(condition: keyValueObj, item: T, relations?: RelationType): Promise<T>;
+  abstract createOrUpdate(
+    condition: keyValueObj,
+    item: T,
+    relations?: RelationType,
+  ): Promise<T>;
 
   abstract createBulk(items: T[]): Promise<T[]>;
 
   abstract updateMany(condition: keyValueObj, item: keyValueObj): Promise<any>;
 
-  abstract remove(condition: keyValueObj, relations?: RelationType): Promise<any>;
+  abstract remove(
+    condition: keyValueObj,
+    relations?: RelationType,
+  ): Promise<any>;
+
+  abstract delete(
+    condition: keyValueObj,
+    relations?: RelationType,
+  ): Promise<any>;
 }

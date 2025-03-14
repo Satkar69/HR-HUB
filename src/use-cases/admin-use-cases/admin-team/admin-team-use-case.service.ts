@@ -1,11 +1,9 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IDataServices } from 'src/core/abstracts';
 import { CreateTeamDto, UpdateTeamDto } from 'src/core/dtos/request/team.dto';
 import { AdminTeamFactoryUseCaseService } from './admin-team-factory-use-case.service';
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member/admin-team-member-factory-use-case.service';
-import { CreateTeamMemberDto } from 'src/core/dtos/request/teamMember.dto';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
-import AppException from 'src/application/exception/app.exception';
 
 @Injectable()
 export class AdminTeamUseCaseService {
@@ -21,23 +19,53 @@ export class AdminTeamUseCaseService {
 
   // add team Members while create teams
   async createTeam(createTeamDto: CreateTeamDto) {
+    // const newTeam =
+    //   this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
+    // const createdTeam = await this.dataServices.team.create(newTeam);
+    // const createManagerMembership = new CreateTeamMemberDto();
+    // createManagerMembership.team = createdTeam.id;
+    // createManagerMembership.member = createTeamDto.leader;
+    // const newManagerMembership =
+    //   this.adminTeamMemberFactoryUseCaseService.createTeamMember(
+    //     createManagerMembership,
+    //   );
+    // await this.dataServices.teamMember.create(newManagerMembership);
+    // await Promise.all(
+    //   createTeamDto.members.map(async (member) => {
+    //     const createTeamMemberDto = new CreateTeamMemberDto();
+    //     createTeamMemberDto.team = createdTeam.id;
+    //     createTeamMemberDto.member = member;
+    //     const newTeamMember =
+    //       this.adminTeamMemberFactoryUseCaseService.createTeamMember(
+    //         createTeamMemberDto,
+    //       );
+    //     return await this.dataServices.teamMember.create(newTeamMember);
+    //   }),
+    // );
+
+    // return createdTeam;
+
+    // Create team object
     const newTeam =
       this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
+    const createdTeam = await this.dataServices.team.create(newTeam);
 
-    await Promise.all(
-      createTeamDto.members.map(async (member) => {
-        const createTeamMemberDto = new CreateTeamMemberDto();
-        createTeamMemberDto.team = newTeam.id;
-        createTeamMemberDto.member = member;
-        const newTeamMember =
-          this.adminTeamMemberFactoryUseCaseService.createTeamMember(
-            createTeamMemberDto,
-          );
-        return await this.dataServices.teamMember.create(newTeamMember);
-      }),
-    );
+    // Prepare all team member objects in one go
+    const teamMembers = [];
+    if (createTeamDto.members.length > 0) {
+      createTeamDto.members.map((memberId) =>
+        teamMembers.push(
+          this.adminTeamMemberFactoryUseCaseService.createTeamMember({
+            team: createdTeam.id,
+            member: memberId,
+          }),
+        ),
+      ),
+        // Bulk insert all team members in one database operation
+        await this.dataServices.teamMember.createBulk(teamMembers);
+    }
 
-    return await this.dataServices.team.create(newTeam);
+    return createdTeam;
   }
 
   // can remove team members directly while updating the team
@@ -47,26 +75,10 @@ export class AdminTeamUseCaseService {
       team,
       updateTeamDto,
     );
-    const teamMembers =
-      await this.dataServices.teamMember.getAllWithoutPagination({
-        team: { id: team.id },
-      });
-    if (updateTeamDto.members.length !== teamMembers.length) {
-      await Promise.all(
-        updateTeamDto.members.map(async (member) => {
-          const notMatchingTeamMembers = teamMembers.filter(
-            (teamMember) => teamMember.member.id !== member,
-          );
-          notMatchingTeamMembers.forEach(async (teamMember) => {
-            await this.dataServices.teamMember.remove({ id: teamMember.id });
-          });
-        }),
-      );
-    }
     return await this.dataServices.team.update({ id: team.id }, editedTeam);
   }
 
   async deleteTeam(teamId: number) {
-    return await this.dataServices.team.remove({ id: teamId });
+    return await this.dataServices.team.delete({ id: teamId });
   }
 }

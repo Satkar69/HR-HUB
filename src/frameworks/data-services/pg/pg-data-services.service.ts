@@ -21,6 +21,8 @@ import { TeamMemberEntity } from './entities/team-member.entity';
 import { ReviewEntity } from './entities/review.entity';
 import { PeerNominationEntity } from './entities/peer-nomination.entity';
 import { QuestionnaireEntity } from './entities/questionnaire.entity';
+import { QuestionModel } from 'src/core/models/question.model';
+import { QuestionEntity } from './entities/question.entity';
 
 @Injectable()
 export class PgDataServices implements IDataServices, OnApplicationBootstrap {
@@ -31,6 +33,7 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
   review: PgGenericRepository<ReviewModel>;
   peerNomination: PgGenericRepository<PeerNominationModel>;
   questionnaire: PgGenericRepository<QuestionnaireModel>;
+  question: PgGenericRepository<QuestionModel>;
 
   constructor(
     @Inject(AdminEntity.REPOSITORY)
@@ -51,8 +54,11 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
     @Inject(PeerNominationEntity.REPOSITORY)
     private peerNominationRepository: Repository<PeerNominationEntity>,
 
-    // @Inject(QuestionnaireEntity.REPOSITORY)
-    // private questionnaireRepository: Repository<QuestionnaireEntity>,
+    @Inject(QuestionnaireEntity.REPOSITORY)
+    private questionnaireRepository: Repository<QuestionnaireEntity>,
+
+    @Inject(QuestionEntity.REPOSITORY)
+    private questionRepository: Repository<QuestionEntity>,
 
     private readonly cls: IClsStore<AppClsStore>,
     @Inject(InjectableString.APP_DATA_SOURCE)
@@ -73,9 +79,10 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
       this.cls,
       this.peerNominationRepository,
     );
-    // this.questionnaire = new PgGenericRepository(
-    //   this.cls,
-    //   this.questionnaireRepository,
-    // );
+    this.questionnaire = new PgGenericRepository(
+      this.cls,
+      this.questionnaireRepository,
+    );
+    this.question = new PgGenericRepository(this.cls, this.questionRepository);
   }
 }

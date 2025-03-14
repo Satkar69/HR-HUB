@@ -6,14 +6,11 @@ import { UserEntity } from './user.entity';
 @Entity('team_member')
 @Unique(['member'])
 export class TeamMemberEntity extends BaseEntity {
-  @ManyToOne(() => TeamEntity, { eager: true })
+  @ManyToOne(() => TeamEntity)
   @JoinColumn({ name: 'team_id' })
   team: TeamEntity;
 
   @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'user_id' })
   member: UserEntity;
-
-  @Column({ name: 'is_leader', default: false })
-  isLeader: boolean;
 }
