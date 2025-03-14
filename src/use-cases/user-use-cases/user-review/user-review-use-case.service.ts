@@ -42,19 +42,41 @@ export class UserReviewUseCaseService {
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
       });
-    // First get all reviews, including nulls
     const reviewPromises = await Promise.all(
       myTeamMembers.map(async (teamMember) => {
         return await this.dataServices.review.getOneOrNull({
           reviewer: { id: teamMember.member.id },
+          reviewee: { id: teamMember.member.id },
           reviewType: ReviewTypeEnum.SELF,
         });
       }),
     );
-    // Then filter out the nulls
     const selfReviews = reviewPromises.filter((review) => review !== null);
 
     return selfReviews;
+  }
+
+  async getMyTeamManagerReviews() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const myTeam = await this.dataServices.team.getOne({
+      leader: { id: userId },
+    });
+    const myTeamMembers =
+      await this.dataServices.teamMember.getAllWithoutPagination({
+        team: { id: myTeam.id },
+      });
+    const reviewPromises = await Promise.all(
+      myTeamMembers.map(async (teamMember) => {
+        return await this.dataServices.review.getOneOrNull({
+          reviewer: { id: userId },
+          reviewee: { id: teamMember.member.id },
+          reviewType: ReviewTypeEnum.MANAGER,
+        });
+      }),
+    );
+    const managerReviews = reviewPromises.filter((review) => review !== null);
+
+    return managerReviews;
   }
 
   async createSelfReview(reviewDto: ReviewDto) {
@@ -74,8 +96,8 @@ export class UserReviewUseCaseService {
       });
     if (inCompleteSelfReviews.length > 0) {
       throw new AppException(
-        { message: `You have already have an incomplete review` },
-        'You have already have an incomplete review',
+        { message: `You already have an incomplete review` },
+        'You already have an incomplete review',
         409,
       );
     }
@@ -104,7 +126,53 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
-  async submitReviewById(reviewId: number, reviewDto: ReviewDto) {
+  async createManagerReview(reviewDto: ReviewDto) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const inCompleteManagerReviews =
+      await this.dataServices.review.getAllWithoutPagination({
+        reviewer: { id: userId },
+        reviewee: { id: reviewDto.reviewee },
+        progressStatus: {
+          $in: [
+            ReviewProgressStatusEnum.PENDING,
+            ReviewProgressStatusEnum.SUBMITTED,
+          ],
+        },
+        reviewType: ReviewTypeEnum.MANAGER,
+      });
+    if (inCompleteManagerReviews.length > 0) {
+      throw new AppException(
+        { message: `The reviewee already has an incomplete review` },
+        'The reviewee already has an incomplete review',
+        409,
+      );
+    }
+    const newReview = this.reviewFactoryUseCaseService.createReview({
+      ...reviewDto,
+      reviewType: ReviewTypeEnum.MANAGER,
+      reviewer: userId,
+      reviewee: reviewDto.reviewee,
+      progressStatus: ReviewProgressStatusEnum.PENDING,
+    });
+    const createdReview = await this.dataServices.review.create(newReview);
+    const questions = await this.dataServices.question.getAllWithoutPagination({
+      questionType: QuestionTypeEnum.MANAGER,
+    });
+    const questionnaires = await Promise.all(
+      questions.map(async (question) => {
+        const questionnaireDto = new createQuestionnaireDto();
+        questionnaireDto.review = createdReview.id;
+        questionnaireDto.question = question.questionText;
+        return this.questionnaireFactroyUseCaseService.createQuestionnaire(
+          questionnaireDto,
+        );
+      }),
+    );
+    await this.dataServices.questionnaire.createBulk(questionnaires);
+    return createdReview;
+  }
+
+  async submitReviewById(reviewId: number) {
     const review = await this.dataServices.review.getOne({ id: reviewId });
     if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
       throw new AppException(
@@ -127,9 +195,39 @@ export class UserReviewUseCaseService {
         400,
       );
     }
+    const reviewDto = new ReviewDto();
+    reviewDto.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
     const updatedReview =
       this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
-    updatedReview.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
+    return await this.dataServices.review.update(
+      { id: review.id },
+      updatedReview,
+    );
+  }
+
+  async markReviewAsCompleted(reviewId: number) {
+    const review = await this.dataServices.review.getOne({ id: reviewId });
+    if (review.progressStatus === ReviewProgressStatusEnum.COMPLETED) {
+      throw new AppException(
+        { message: `Review already completed` },
+        'Review already completed',
+        400,
+      );
+    }
+    const isNotSubmittedReview = await this.dataServices.review.getOneOrNull({
+      progressStatus: ReviewProgressStatusEnum.PENDING,
+    });
+    if (isNotSubmittedReview) {
+      throw new AppException(
+        { message: `The review is not submitted yet` },
+        'The review is not submitted yet',
+        400,
+      );
+    }
+    const reviewDto = new ReviewDto();
+    reviewDto.progressStatus = ReviewProgressStatusEnum.COMPLETED;
+    const updatedReview =
+      this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
     return await this.dataServices.review.update(
       { id: review.id },
       updatedReview,
