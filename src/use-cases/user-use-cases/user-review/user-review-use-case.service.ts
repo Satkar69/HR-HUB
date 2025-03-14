@@ -104,11 +104,18 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
-  async submitSelfReviewById(reviewId: number, reviewDto: ReviewDto) {
+  async submitReviewById(reviewId: number, reviewDto: ReviewDto) {
     const review = await this.dataServices.review.getOne({ id: reviewId });
+    if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
+      throw new AppException(
+        { message: `Review already submitted` },
+        'Review already submitted',
+        400,
+      );
+    }
     const reviewQuestionnaires =
       await this.dataServices.questionnaire.getAllWithoutPagination({
-        review: review.id,
+        review: { id: review.id },
       });
     const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
       return questionnaire.answers.length === 0;

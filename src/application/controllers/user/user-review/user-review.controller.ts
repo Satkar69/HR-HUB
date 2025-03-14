@@ -34,16 +34,13 @@ export class UserReviewController {
     );
   }
 
-  @Patch('/self/submit/:id')
-  async submitSelfReview(
+  @Patch('/submit/:id')
+  async submitReview(
     @Param('id') reviewId: number,
     @Body() reviewDto: ReviewDto,
   ) {
     return CoreApiResponse.success(
-      await this.userReviewUseCaseService.submitSelfReviewById(
-        reviewId,
-        reviewDto,
-      ),
+      await this.userReviewUseCaseService.submitReviewById(reviewId, reviewDto),
     );
   }
 
