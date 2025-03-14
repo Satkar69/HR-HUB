@@ -1,8 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { UserEntity } from './user.entity';
 import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
+import { QuestionnaireEntity } from './questionnaire.entity';
 
 @Entity('reviews')
 export class ReviewEntity extends BaseEntity {
@@ -25,6 +33,13 @@ export class ReviewEntity extends BaseEntity {
 
   @Column({ name: 'progress_status' })
   progressStatus: ReviewProgressStatusEnum;
+
+  @OneToMany(
+    () => QuestionnaireEntity,
+    (questionnaire) => questionnaire.review,
+    { eager: true },
+  )
+  questionnaires: QuestionnaireEntity[];
 
   @Column({ name: 'due_date' })
   dueDate: Date;

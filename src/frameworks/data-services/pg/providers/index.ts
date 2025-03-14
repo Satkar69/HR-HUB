@@ -8,6 +8,7 @@ import { TeamMemberEntity } from '../entities/team-member.entity';
 import { ReviewEntity } from '../entities/review.entity';
 import { PeerNominationEntity } from '../entities/peer-nomination.entity';
 import { QuestionnaireEntity } from '../entities/questionnaire.entity';
+import { QuestionEntity } from '../entities/question.entity';
 
 const providers = [
   ...appDataSourceProviders,
@@ -53,13 +54,20 @@ const providers = [
     },
     inject: [InjectableString.APP_DATA_SOURCE],
   },
-  // {
-  //   provide: QuestionnaireEntity.REPOSITORY,
-  //   useFactory: (dataSource: DataSource) => {
-  //     return dataSource.getRepository(QuestionnaireEntity);
-  //   },
-  //   inject: [InjectableString.APP_DATA_SOURCE],
-  // },
+  {
+    provide: QuestionnaireEntity.REPOSITORY,
+    useFactory: (dataSource: DataSource) => {
+      return dataSource.getRepository(QuestionnaireEntity);
+    },
+    inject: [InjectableString.APP_DATA_SOURCE],
+  },
+  {
+    provide: QuestionEntity.REPOSITORY,
+    useFactory: (dataSource: DataSource) => {
+      return dataSource.getRepository(QuestionEntity);
+    },
+    inject: [InjectableString.APP_DATA_SOURCE],
+  },
 ];
 
 export default providers;
