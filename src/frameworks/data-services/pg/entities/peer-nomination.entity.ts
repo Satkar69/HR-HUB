@@ -10,18 +10,22 @@ export class PeerNominationEntity extends BaseEntity {
   // @JoinColumn({ name: 'review_id' })
   // review: ReviewEntity;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'nominator_id' })
   nominator: UserEntity;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'nominee_id' })
   nominee: UserEntity;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'reviewee_id' })
   reviewee: UserEntity;
 
-  @Column({ name: 'nomination_status' })
+  @Column({
+    name: 'nomination_status',
+    nullable: false,
+    default: PeerNominationStatusEnum.PENDING,
+  })
   nominationStatus: PeerNominationStatusEnum;
 }

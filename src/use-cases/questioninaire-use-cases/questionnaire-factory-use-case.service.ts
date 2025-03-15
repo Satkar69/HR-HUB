@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { createQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
+import { CreateQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
 import { QuestionnaireModel } from 'src/core/models/questionnaire.model';
 import { ReviewModel } from 'src/core/models/review.model';
 
 @Injectable()
 export class QuestionnaireFactoryUseCaseService {
-  createQuestionnaire(createQuestionnaireDto: createQuestionnaireDto) {
+  createQuestionnaire(createQuestionnaireDto: CreateQuestionnaireDto) {
     const questionnaire = new QuestionnaireModel();
     if (createQuestionnaireDto.review) {
       const reviewModel = new ReviewModel();

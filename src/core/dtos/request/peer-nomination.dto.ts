@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { PeerNominationStatusEnum } from 'src/common/enums/peer-nomination-status.enum';
 
 export class PeerNominationDto {
@@ -14,6 +14,12 @@ export class PeerNominationDto {
   @IsNumber()
   reviewee: number;
 
+  @IsOptional()
+  @IsEnum(PeerNominationStatusEnum)
+  nominationStatus: PeerNominationStatusEnum;
+}
+
+export class UpdatePeerNominationStatusDto {
   @IsNotEmpty()
   @IsEnum(PeerNominationStatusEnum)
   nominationStatus: PeerNominationStatusEnum;

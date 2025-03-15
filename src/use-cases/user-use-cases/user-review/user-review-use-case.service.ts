@@ -4,7 +4,7 @@ import { IDataServices } from 'src/core/abstracts';
 import { ReviewDto } from 'src/core/dtos/request/review.dto';
 import { QuestionnaireFactoryUseCaseService } from 'src/use-cases/questioninaire-use-cases/questionnaire-factory-use-case.service';
 import { ReviewFactoryUseCaseService } from 'src/use-cases/review-use-cases/review-factory-use-case.service';
-import { createQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
+import { CreateQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
 import {
   AppClsStore,
@@ -162,7 +162,7 @@ export class UserReviewUseCaseService {
     });
     const questionnaires = await Promise.all(
       questions.map(async (question) => {
-        const questionnaireDto = new createQuestionnaireDto();
+        const questionnaireDto = new CreateQuestionnaireDto();
         questionnaireDto.review = createdReview.id;
         questionnaireDto.question = question.questionText;
         return this.questionnaireFactroyUseCaseService.createQuestionnaire(
@@ -173,7 +173,7 @@ export class UserReviewUseCaseService {
     await this.dataServices.questionnaire.createBulk(questionnaires);
     return createdReview;
   }
-
+  // TODO :: test the changes made for this method
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
@@ -209,9 +209,12 @@ export class UserReviewUseCaseService {
     });
     const questionnaires = await Promise.all(
       questions.map(async (question) => {
-        const questionnaireDto = new createQuestionnaireDto();
+        const questionnaireDto = new CreateQuestionnaireDto();
         questionnaireDto.review = createdReview.id;
-        questionnaireDto.question = question.questionText;
+        questionnaireDto.question = question.questionText.replace(
+          'XYZ',
+          createdReview.reviewee.fullname,
+        );
         return this.questionnaireFactroyUseCaseService.createQuestionnaire(
           questionnaireDto,
         );
