@@ -66,6 +66,15 @@ export class UserReviewUseCaseService {
     });
   }
 
+  // TODO :: Implement and test this method by making corresponding controller
+  async getMyPeerReviews(): Promise<IPaginationData> {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    return await this.dataServices.review.getAll({
+      reviewer: { id: userId },
+      reviewType: ReviewTypeEnum.PEER,
+    });
+  }
+
   async getMyTeamSelfReviews() {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const myTeam = await this.dataServices.team.getOneOrNull({
