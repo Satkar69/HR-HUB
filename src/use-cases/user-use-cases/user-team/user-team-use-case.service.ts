@@ -19,9 +19,12 @@ export class UserTeamUseCaseService {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const user = await this.dataServices.user.getOne({ id: userId });
     if (user.role === UserRoleEnum.EMPLOYEE) {
-      const teamMembership = await this.dataServices.teamMember.getOneOrNull({
-        member: { id: user.id },
-      });
+      const teamMembership = await this.dataServices.teamMember.getOneOrNull(
+        {
+          member: { id: user.id },
+        },
+        { team: true },
+      );
       if (!teamMembership) {
         throw new AppException(
           { message: `You are not a member of any team` },
@@ -29,13 +32,13 @@ export class UserTeamUseCaseService {
           400,
         );
       }
+      const team = await this.dataServices.team.getOne({
+        id: teamMembership.team.id,
+      });
       const teamMembers =
         await this.dataServices.teamMember.getAllWithoutPagination({
-          id: teamMembership.id,
+          team: { id: team.id },
         });
-      const team = await this.dataServices.team.getOne({
-        id: teamMembership.team,
-      });
       return { ...team, members: teamMembers };
     }
 

@@ -16,6 +16,8 @@ import AppException from 'src/application/exception/app.exception';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
+// TODO :: get self, manager, peer review by review id
+
 @Injectable()
 export class UserReviewUseCaseService {
   constructor(
