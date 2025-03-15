@@ -14,6 +14,7 @@ import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import AppException from 'src/application/exception/app.exception';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
+import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -35,6 +36,14 @@ export class UserReviewUseCaseService {
 
   async getMyManagerReviews(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
+    const user = await this.dataServices.user.getOne({ id: userId });
+    if (user.role === UserRoleEnum.MANAGER) {
+      throw new AppException(
+        { message: `Manager users don't have their own manager reviews` },
+        `Manager users don't have their own manager reviews`,
+        400,
+      );
+    }
     const myTeamMembership = await this.dataServices.teamMember.getOneOrNull({
       member: { id: userId },
     });
