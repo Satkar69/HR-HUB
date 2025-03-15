@@ -33,11 +33,40 @@ export class UserReviewUseCaseService {
     });
   }
 
+  async getMyManagerReviews(): Promise<IPaginationData> {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const myTeamMembership = await this.dataServices.teamMember.getOneOrNull({
+      member: { id: userId },
+    });
+    if (!myTeamMembership) {
+      throw new AppException(
+        { message: `You are not a member of any team` },
+        'You are not a member of any team',
+        400,
+      );
+    }
+    const myTeam = await this.dataServices.team.getOneOrNull({
+      id: myTeamMembership.team.id,
+    });
+    return await this.dataServices.review.getAll({
+      reviewer: { id: myTeam.leader.id },
+      reviewee: { id: userId },
+      reviewType: ReviewTypeEnum.MANAGER,
+    });
+  }
+
   async getMyTeamSelfReviews() {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const myTeam = await this.dataServices.team.getOne({
+    const myTeam = await this.dataServices.team.getOneOrNull({
       leader: { id: userId },
     });
+    if (!myTeam) {
+      throw new AppException(
+        { message: `You are not not assigned to any team as a leader` },
+        'You are not not assigned to any team as a leader',
+        400,
+      );
+    }
     const myTeamMembers =
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
@@ -56,11 +85,19 @@ export class UserReviewUseCaseService {
     return selfReviews;
   }
 
+  // manager
   async getMyTeamManagerReviews() {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const myTeam = await this.dataServices.team.getOne({
+    const myTeam = await this.dataServices.team.getOneOrNull({
       leader: { id: userId },
     });
+    if (!myTeam) {
+      throw new AppException(
+        { message: `You are not not assigned to any team as a leader` },
+        'You are not not assigned to any team as a leader',
+        400,
+      );
+    }
     const myTeamMembers =
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
@@ -126,6 +163,7 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
+  // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const inCompleteManagerReviews =

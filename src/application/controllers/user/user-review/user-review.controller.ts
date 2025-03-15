@@ -27,6 +27,15 @@ export class UserReviewController {
     );
   }
 
+  // TODO :: test the route in postman
+  @Get('/my/manager/get-all')
+  async getMyManagerReviews(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.userReviewUseCaseService.getMyManagerReviews(),
+      query,
+    );
+  }
+
   @Post('/self/create')
   async createSelfReview(@Body() reviewDto: ReviewDto) {
     return CoreApiResponse.success(
