@@ -83,7 +83,7 @@ export class UserPeerNominationUseCaseService {
       reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.reviewee.fullname}`;
       reviewDto.description = `Please provide a peer review for ${updatedPeerNomination.reviewee.fullname}`;
       reviewDto.progressStatus = ReviewProgressStatusEnum.PENDING;
-      oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+      oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 14);
       reviewDto.dueDate = oneWeekFromNow;
 
       const newReview =
