@@ -19,10 +19,10 @@ export const appDataSourceProviders = [
         const dataSourceOptions: object = {
           type: 'postgres',
           // database bain branch
-          // url: config.getDatabaseMainUrl(),
+          url: config.getDatabaseMainUrl(),
 
           // database dev branch
-          url: config.getDatabaseDevUrl(),
+          // url: config.getDatabaseDevUrl(),
 
           // docker pg image local development
           // url: config.getDatabaseUrl(),
