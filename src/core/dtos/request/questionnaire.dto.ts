@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class createQuestionnaireDto {
+export class CreateQuestionnaireDto {
   @IsNotEmpty()
   @IsNumber()
   review: number;
