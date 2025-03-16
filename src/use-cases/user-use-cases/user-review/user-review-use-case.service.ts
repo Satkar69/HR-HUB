@@ -16,8 +16,6 @@ import AppException from 'src/application/exception/app.exception';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 
-// TODO :: get self, manager, peer review by review id
-
 @Injectable()
 export class UserReviewUseCaseService {
   constructor(
@@ -46,9 +44,12 @@ export class UserReviewUseCaseService {
         400,
       );
     }
-    const myTeamMembership = await this.dataServices.teamMember.getOneOrNull({
-      member: { id: userId },
-    });
+    const myTeamMembership = await this.dataServices.teamMember.getOneOrNull(
+      {
+        member: { id: userId },
+      },
+      { team: true },
+    );
     if (!myTeamMembership) {
       throw new AppException(
         { message: `You are not a member of any team` },

@@ -27,7 +27,6 @@ export class UserReviewController {
     );
   }
 
-  // TODO :: test the route in postman
   @Get('/my/manager/get-all')
   async getMyManagerReviews(@Query() query: IPaginationQuery) {
     return CoreApiResponse.pagination(
@@ -58,7 +57,6 @@ export class UserReviewController {
     );
   }
 
-  // TODO :: test the route in postman
   @Manager()
   @Get('/my-team/manager/get-all')
   async getMyTeamMembersManagerReviews() {
@@ -67,7 +65,6 @@ export class UserReviewController {
     );
   }
 
-  // TODO :: test the route in postman
   @Manager()
   @Post('/manager/create')
   async createManagerReview(@Body() reviewDto: ReviewDto) {
