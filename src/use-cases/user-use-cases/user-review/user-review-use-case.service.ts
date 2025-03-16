@@ -15,6 +15,8 @@ import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import AppException from 'src/application/exception/app.exception';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
+import { UserReviewQuestionnaireFactoryUseCaseService } from './user-review-questionnaire/user-review-questionnaire-factory-use-case.service';
+import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -22,6 +24,7 @@ export class UserReviewUseCaseService {
     private dataServices: IDataServices,
     private reviewFactoryUseCaseService: ReviewFactoryUseCaseService,
     private questionnaireFactroyUseCaseService: QuestionnaireFactoryUseCaseService,
+    private userReviewQuestionnaireFactoryUseCaseService: UserReviewQuestionnaireFactoryUseCaseService,
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
@@ -308,5 +311,68 @@ export class UserReviewUseCaseService {
       { id: review.id },
       updatedReview,
     );
+  }
+
+  // TODO :: Implement and test this alternative method to submit review by id
+  async testSubmitReviewById(
+    reviewId: number,
+    updateQuestionnairesDto: UpdateQuestionnairesDto,
+  ) {
+    const { questionnaires } = updateQuestionnairesDto;
+
+    // Validate questionnaires array
+    if (!questionnaires.length) {
+      throw new AppException(
+        { questionnaires: 'Questionnaires cannot be empty' },
+        'Questionnaires cannot be empty',
+        400,
+      );
+    }
+
+    // Fetch review early to validate it's not already submitted
+    const review = await this.dataServices.review.getOne({ id: reviewId });
+    if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
+      throw new AppException(
+        { message: 'Review already submitted' },
+        'Review already submitted',
+        400,
+      );
+    }
+
+    // Process questionnaires in one batch
+    const updatedQuestionnaires = await Promise.all(
+      questionnaires.map(async (questionnaire) => {
+        const editedQuestionnaire =
+          this.userReviewQuestionnaireFactoryUseCaseService.updateQuestionnaire(
+            questionnaire,
+          );
+
+        return this.dataServices.questionnaire.update(
+          { id: questionnaire.questionnaireId },
+          editedQuestionnaire,
+        );
+      }),
+    );
+
+    // Verify all questionnaires have answers (using the updated data)
+    const hasIncompleteAnswers = updatedQuestionnaires.some(
+      (questionnaire) => !questionnaire.answers.length,
+    );
+
+    if (hasIncompleteAnswers) {
+      throw new AppException(
+        { message: 'You have some incomplete answers' },
+        'You have some incomplete answers',
+        400,
+      );
+    }
+
+    // Update review status
+    const reviewDto = new ReviewDto();
+    reviewDto.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
+    const updatedReview =
+      this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
+
+    return this.dataServices.review.update({ id: review.id }, updatedReview);
   }
 }
