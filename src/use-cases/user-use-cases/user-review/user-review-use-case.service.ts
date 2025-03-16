@@ -182,7 +182,6 @@ export class UserReviewUseCaseService {
     await this.dataServices.questionnaire.createBulk(questionnaires);
     return createdReview;
   }
-  // TODO :: test the changes made for this method
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
@@ -205,6 +204,16 @@ export class UserReviewUseCaseService {
         409,
       );
     }
+    const isTeamMember = await this.dataServices.teamMember.getOneOrNull({
+      member: { id: reviewDto.reviewee },
+    });
+    if (!isTeamMember) {
+      throw new AppException(
+        { message: `The reviewee is not a team member` },
+        'The reviewee is not a team member',
+        400,
+      );
+    }
     const newReview = this.reviewFactoryUseCaseService.createReview({
       ...reviewDto,
       reviewType: ReviewTypeEnum.MANAGER,
@@ -212,6 +221,11 @@ export class UserReviewUseCaseService {
       reviewee: reviewDto.reviewee,
       progressStatus: ReviewProgressStatusEnum.PENDING,
     });
+    const reviewee = await this.dataServices.user.getOne({
+      id: reviewDto.reviewee,
+    });
+    newReview.subject = `Manager Review for ${reviewee.fullname}`;
+    newReview.description = `Providing a manager review for ${reviewee.fullname}`;
     const createdReview = await this.dataServices.review.create(newReview);
     const questions = await this.dataServices.question.getAllWithoutPagination({
       questionType: QuestionTypeEnum.MANAGER,
@@ -222,7 +236,7 @@ export class UserReviewUseCaseService {
         questionnaireDto.review = createdReview.id;
         questionnaireDto.question = question.questionText.replace(
           'XYZ',
-          createdReview.reviewee.fullname,
+          reviewee.fullname,
         );
         return this.questionnaireFactroyUseCaseService.createQuestionnaire(
           questionnaireDto,
