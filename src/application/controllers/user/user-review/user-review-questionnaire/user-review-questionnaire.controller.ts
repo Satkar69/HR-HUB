@@ -9,27 +9,27 @@ export class UserReviewQuestionnaireController {
     private userReviewQuestionnaireUseCaseService: UserReviewQuestionnaireUseCaseService,
   ) {}
 
-  // @Patch('/questionnaire/update')
-  // async updateReviewQuestionnaires(
-  //   @Body() updateQuestionnairesDto: UpdateQuestionnairesDto,
-  // ) {
-  //   return CoreApiResponse.success(
-  //     await this.userReviewQuestionnaireUseCaseService.updateQuestionnaires(
-  //       updateQuestionnairesDto,
-  //     ),
-  //   );
-  // }
-
-  @Patch('/:id/questionnaire/update')
-  async updateQuestionnaireByReview(
-    @Param('id') reviewId: number,
+  @Patch('/questionnaire/update')
+  async updateReviewQuestionnaires(
     @Body() updateQuestionnairesDto: UpdateQuestionnairesDto,
   ) {
     return CoreApiResponse.success(
-      await this.userReviewQuestionnaireUseCaseService.updateQuestionnairesByReviewId(
-        reviewId,
+      await this.userReviewQuestionnaireUseCaseService.updateQuestionnaires(
         updateQuestionnairesDto,
       ),
     );
   }
+
+  // @Patch('/:id/questionnaire/update')
+  // async updateQuestionnaireByReview(
+  //   @Param('id') reviewId: number,
+  //   @Body() updateQuestionnairesDto: UpdateQuestionnairesDto,
+  // ) {
+  //   return CoreApiResponse.success(
+  //     await this.userReviewQuestionnaireUseCaseService.updateQuestionnairesByReviewId(
+  //       reviewId,
+  //       updateQuestionnairesDto,
+  //     ),
+  //   );
+  // }
 }
