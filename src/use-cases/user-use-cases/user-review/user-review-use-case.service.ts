@@ -17,6 +17,7 @@ import { IPaginationData } from 'src/common/interface/response/interface/respons
 import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 import { UserReviewQuestionnaireFactoryUseCaseService } from './user-review-questionnaire/user-review-questionnaire-factory-use-case.service';
 import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -156,10 +157,7 @@ export class UserReviewUseCaseService {
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
         reviewee: { id: userId },
-        progressStatus:
-          ReviewProgressStatusEnum.PENDING ||
-          ReviewProgressStatusEnum.SUBMITTED,
-
+        progressStatus: Not(ReviewProgressStatusEnum.COMPLETED),
         reviewType: ReviewTypeEnum.SELF,
       });
     if (inCompleteSelfReviews.length > 0) {
@@ -200,10 +198,7 @@ export class UserReviewUseCaseService {
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
         reviewee: { id: reviewDto.reviewee },
-        progressStatus:
-          ReviewProgressStatusEnum.PENDING ||
-          ReviewProgressStatusEnum.SUBMITTED,
-
+        progressStatus: Not(ReviewProgressStatusEnum.COMPLETED),
         reviewType: ReviewTypeEnum.MANAGER,
       });
     if (inCompleteManagerReviews.length > 0) {
