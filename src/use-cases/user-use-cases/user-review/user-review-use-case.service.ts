@@ -147,12 +147,10 @@ export class UserReviewUseCaseService {
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
         reviewee: { id: userId },
-        progressStatus: {
-          $in: [
-            ReviewProgressStatusEnum.PENDING,
-            ReviewProgressStatusEnum.SUBMITTED,
-          ],
-        },
+        progressStatus:
+          ReviewProgressStatusEnum.PENDING ||
+          ReviewProgressStatusEnum.SUBMITTED,
+
         reviewType: ReviewTypeEnum.SELF,
       });
     if (inCompleteSelfReviews.length > 0) {
@@ -193,12 +191,10 @@ export class UserReviewUseCaseService {
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
         reviewee: { id: reviewDto.reviewee },
-        progressStatus: {
-          $in: [
-            ReviewProgressStatusEnum.PENDING,
-            ReviewProgressStatusEnum.SUBMITTED,
-          ],
-        },
+        progressStatus:
+          ReviewProgressStatusEnum.PENDING ||
+          ReviewProgressStatusEnum.SUBMITTED,
+
         reviewType: ReviewTypeEnum.MANAGER,
       });
     if (inCompleteManagerReviews.length > 0) {
@@ -251,38 +247,38 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
-  async submitReviewById(reviewId: number) {
-    const review = await this.dataServices.review.getOne({ id: reviewId });
-    if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
-      throw new AppException(
-        { message: `Review already submitted` },
-        'Review already submitted',
-        400,
-      );
-    }
-    const reviewQuestionnaires =
-      await this.dataServices.questionnaire.getAllWithoutPagination({
-        review: { id: review.id },
-      });
-    const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
-      return questionnaire.answers.length === 0;
-    });
-    if (isIncompleteAnswers) {
-      throw new AppException(
-        { message: `You have some incomplete answers` },
-        'You have some incomplete answers',
-        400,
-      );
-    }
-    const reviewDto = new ReviewDto();
-    reviewDto.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
-    const updatedReview =
-      this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
-    return await this.dataServices.review.update(
-      { id: review.id },
-      updatedReview,
-    );
-  }
+  // async submitReviewById(reviewId: number) {
+  //   const review = await this.dataServices.review.getOne({ id: reviewId });
+  //   if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
+  //     throw new AppException(
+  //       { message: `Review already submitted` },
+  //       'Review already submitted',
+  //       400,
+  //     );
+  //   }
+  //   const reviewQuestionnaires =
+  //     await this.dataServices.questionnaire.getAllWithoutPagination({
+  //       review: { id: review.id },
+  //     });
+  //   const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
+  //     return questionnaire.answers.length === 0;
+  //   });
+  //   if (isIncompleteAnswers) {
+  //     throw new AppException(
+  //       { message: `You have some incomplete answers` },
+  //       'You have some incomplete answers',
+  //       400,
+  //     );
+  //   }
+  //   const reviewDto = new ReviewDto();
+  //   reviewDto.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
+  //   const updatedReview =
+  //     this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
+  //   return await this.dataServices.review.update(
+  //     { id: review.id },
+  //     updatedReview,
+  //   );
+  // }
 
   async markReviewAsCompleted(reviewId: number) {
     const review = await this.dataServices.review.getOne({ id: reviewId });
@@ -314,7 +310,7 @@ export class UserReviewUseCaseService {
   }
 
   // TODO :: Implement and test this alternative method to submit review by id
-  async testSubmitReviewById(
+  async submitReviewById(
     reviewId: number,
     updateQuestionnairesDto: UpdateQuestionnairesDto,
   ) {
@@ -340,7 +336,7 @@ export class UserReviewUseCaseService {
     }
 
     // Process questionnaires in one batch
-    const updatedQuestionnaires = await Promise.all(
+    await Promise.all(
       questionnaires.map(async (questionnaire) => {
         const editedQuestionnaire =
           this.userReviewQuestionnaireFactoryUseCaseService.updateQuestionnaire(
@@ -354,14 +350,16 @@ export class UserReviewUseCaseService {
       }),
     );
 
-    // Verify all questionnaires have answers (using the updated data)
-    const hasIncompleteAnswers = updatedQuestionnaires.some(
-      (questionnaire) => !questionnaire.answers.length,
-    );
-
-    if (hasIncompleteAnswers) {
+    const reviewQuestionnaires =
+      await this.dataServices.questionnaire.getAllWithoutPagination({
+        review: { id: review.id },
+      });
+    const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
+      return questionnaire.answers.length === 0;
+    });
+    if (isIncompleteAnswers) {
       throw new AppException(
-        { message: 'You have some incomplete answers' },
+        { message: `You have some incomplete answers` },
         'You have some incomplete answers',
         400,
       );

@@ -10,6 +10,7 @@ import {
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { Manager } from 'src/application/decorators/manager.decorator';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
+import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
 import { ReviewDto } from 'src/core/dtos/request/review.dto';
 import { UserReviewUseCaseService } from 'src/use-cases/user-use-cases/user-review/user-review-use-case.service';
 
@@ -43,9 +44,15 @@ export class UserReviewController {
   }
 
   @Patch('/submit/:id')
-  async submitReview(@Param('id') reviewId: number) {
+  async submitReview(
+    @Param('id') reviewId: number,
+    @Body() updateQuestionnairesDto: UpdateQuestionnairesDto,
+  ) {
     return CoreApiResponse.success(
-      await this.userReviewUseCaseService.submitReviewById(reviewId),
+      await this.userReviewUseCaseService.submitReviewById(
+        reviewId,
+        updateQuestionnairesDto,
+      ),
     );
   }
 
