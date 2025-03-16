@@ -293,10 +293,8 @@ export class UserReviewUseCaseService {
         400,
       );
     }
-    const isNotSubmittedReview = await this.dataServices.review.getOneOrNull({
-      progressStatus: ReviewProgressStatusEnum.PENDING,
-    });
-    if (isNotSubmittedReview) {
+
+    if (review.progressStatus === ReviewProgressStatusEnum.PENDING) {
       throw new AppException(
         { message: `The review is not submitted yet` },
         'The review is not submitted yet',
