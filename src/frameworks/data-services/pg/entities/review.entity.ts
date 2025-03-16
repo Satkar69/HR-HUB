@@ -17,11 +17,11 @@ export class ReviewEntity extends BaseEntity {
   @Column({ name: 'review_type' })
   reviewType: ReviewTypeEnum;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'reviewer_id' })
   reviewer: UserEntity;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'reviewee_id' })
   reviewee: UserEntity;
 

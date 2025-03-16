@@ -5,7 +5,6 @@ import { IDataServices } from 'src/core/abstracts';
 export class TeamUseCaseService {
   constructor(private dataServices: IDataServices) {}
 
-  // todo :: make corresponding routes in the controller
   async getTeambyId(teamId: number) {
     const teamMembers =
       await this.dataServices.teamMember.getAllWithoutPagination({

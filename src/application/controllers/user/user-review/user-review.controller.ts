@@ -10,6 +10,7 @@ import {
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { Manager } from 'src/application/decorators/manager.decorator';
 import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
+import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
 import { ReviewDto } from 'src/core/dtos/request/review.dto';
 import { UserReviewUseCaseService } from 'src/use-cases/user-use-cases/user-review/user-review-use-case.service';
 
@@ -27,6 +28,14 @@ export class UserReviewController {
     );
   }
 
+  @Get('/my/manager/get-all')
+  async getMyManagerReviews(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.userReviewUseCaseService.getMyManagerReviews(),
+      query,
+    );
+  }
+
   @Post('/self/create')
   async createSelfReview(@Body() reviewDto: ReviewDto) {
     return CoreApiResponse.success(
@@ -34,15 +43,15 @@ export class UserReviewController {
     );
   }
 
-  @Patch('/self/submit/:id')
-  async submitSelfReview(
+  @Patch('/submit/:id')
+  async submitReview(
     @Param('id') reviewId: number,
-    @Body() reviewDto: ReviewDto,
+    @Body() updateQuestionnairesDto: UpdateQuestionnairesDto,
   ) {
     return CoreApiResponse.success(
-      await this.userReviewUseCaseService.submitSelfReviewById(
+      await this.userReviewUseCaseService.submitReviewById(
         reviewId,
-        reviewDto,
+        updateQuestionnairesDto,
       ),
     );
   }
@@ -52,6 +61,31 @@ export class UserReviewController {
   async getMyTeamMembersSelfReviews() {
     return CoreApiResponse.success(
       await this.userReviewUseCaseService.getMyTeamSelfReviews(),
+    );
+  }
+
+  @Manager()
+  @Get('/my-team/manager/get-all')
+  async getMyTeamMembersManagerReviews() {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.getMyTeamManagerReviews(),
+    );
+  }
+
+  @Manager()
+  @Post('/manager/create')
+  async createManagerReview(@Body() reviewDto: ReviewDto) {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.createManagerReview(reviewDto),
+    );
+  }
+
+  // TODO :: test the route in postman
+  @Manager()
+  @Patch('/mark-as-complete/:id')
+  async markAsComplete(@Param('id') reviewId: number) {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.markReviewAsCompleted(reviewId),
     );
   }
 }
