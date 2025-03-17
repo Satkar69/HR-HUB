@@ -58,7 +58,7 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not a member of any team` },
         'You are not a member of any team',
-        400,
+        404,
       );
     }
     const myTeam = await this.dataServices.team.getOneOrNull({
@@ -98,7 +98,7 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not not assigned to any team as a leader` },
         'You are not not assigned to any team as a leader',
-        400,
+        404,
       );
     }
     const myTeamMembers =
@@ -129,7 +129,7 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not not assigned to any team as a leader` },
         'You are not not assigned to any team as a leader',
-        400,
+        404,
       );
     }
     const myTeamMembers =

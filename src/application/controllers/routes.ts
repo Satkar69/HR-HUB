@@ -5,6 +5,7 @@ import { UserControllerModule } from './user/user-controller.module';
 import { TeamControllerModule } from './team/team-controller.module';
 import { TeamMemberControllerModule } from './team-member/team-member-controller.module';
 import { ReviewControllerModule } from './review/review-controller.module';
+import { PeerNominationControllerModule } from './peer-nomination/peer-nomination-controller.module';
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
       {
         path: '/review',
         children: [ReviewControllerModule],
+      },
+      {
+        path: '/peer-nomination',
+        children: [PeerNominationControllerModule],
       },
     ],
   },

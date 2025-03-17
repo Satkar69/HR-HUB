@@ -5,6 +5,7 @@ import { UserTeamMemberController } from './user-team/user-team-member/user-team
 import { UserController } from './user-controller';
 import { UserReviewController } from './user-review/user-review.controller';
 import { UserReviewQuestionnaireController } from './user-review/user-review-questionnaire/user-review-questionnaire.controller';
+import { UserPeerNominationController } from './user-peer-nomination/user-peer-nomination.controller';
 
 @Module({
   imports: [UserUseCaseModule],
@@ -14,6 +15,7 @@ import { UserReviewQuestionnaireController } from './user-review/user-review-que
     UserTeamMemberController,
     UserReviewController,
     UserReviewQuestionnaireController,
+    UserPeerNominationController,
   ],
 })
 export class UserControllerModule {}

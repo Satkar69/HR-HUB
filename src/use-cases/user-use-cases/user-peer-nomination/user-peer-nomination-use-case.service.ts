@@ -17,6 +17,7 @@ import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
 import { QuestionTypeEnum } from 'src/common/enums/question-type.enum';
 import { CreateQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
+import AppUnauthorizedException from 'src/application/exception/app-unauthorized.exception';
 
 // TODO :: Implement and test all the methods of this service by making corresponding controllers
 
@@ -31,6 +32,7 @@ export class UserPeerNominationUseCaseService {
   ) {}
 
   async createPeerNomination(peerNominationDto: PeerNominationDto) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
     const existingPeerNomination =
       await this.dataServices.peerNomination.getOneOrNull({
         nominee: { id: peerNominationDto.nominee },
@@ -46,6 +48,7 @@ export class UserPeerNominationUseCaseService {
     const newPeerNomination =
       this.userPeerNominationFactoryUseCaseService.createPeerNomination({
         ...peerNominationDto,
+        nominator: userId,
         nominationStatus: PeerNominationStatusEnum.PENDING,
       });
     return this.dataServices.peerNomination.create(newPeerNomination);
@@ -59,10 +62,27 @@ export class UserPeerNominationUseCaseService {
     return peerNomination;
   }
 
-  async assignedPeerNominationAction(
+  async getCreatedPeerMominations() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNominations = await this.dataServices.peerNomination.getAll({
+      nominator: { id: userId },
+    });
+    return peerNominations;
+  }
+
+  async assignedPeerNominationStatusAction(
     peerNominationId: number,
     updatePeerNominationStatusDto: UpdatePeerNominationStatusDto,
   ) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNomination = await this.dataServices.peerNomination.getOneOrNull({
+      nominee: { id: userId },
+    });
+    if (!peerNomination) {
+      throw new AppUnauthorizedException(
+        'You are not nominee for this peer nomination',
+      );
+    }
     const updatedPeerNominationStatus =
       this.userPeerNominationFactoryUseCaseService.updatePeerNominationStatus(
         updatePeerNominationStatusDto,
@@ -80,7 +100,7 @@ export class UserPeerNominationUseCaseService {
       reviewDto.reviewType = ReviewTypeEnum.PEER;
       reviewDto.reviewer = updatedPeerNomination.nominee.id;
       reviewDto.reviewee = updatedPeerNomination.reviewee.id;
-      reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.reviewee.fullname}`;
+      reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.nominee.fullname}`;
       reviewDto.description = `Please provide a peer review for ${updatedPeerNomination.reviewee.fullname}`;
       reviewDto.progressStatus = ReviewProgressStatusEnum.PENDING;
       oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 14);

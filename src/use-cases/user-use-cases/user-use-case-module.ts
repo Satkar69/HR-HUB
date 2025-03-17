@@ -7,6 +7,7 @@ import { UserTeamMemberUseCaseModule } from './user-team/user-team-member/user-t
 import { UserUseCaseService } from './user-use-case-service';
 import { UserReviewUseCaseModule } from './user-review/user-review-use-case.module';
 import { UserReviewQuestionnaireUseCaseModule } from './user-review/user-review-questionnaire/user-review-questionnaire-use-case.module';
+import { UserPeerNominationUseCaseModule } from './user-peer-nomination/user-peer-nomination-use-case.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserReviewQuestionnaireUseCaseModule } from './user-review/user-review-
     UserTeamMemberUseCaseModule,
     UserReviewUseCaseModule,
     UserReviewQuestionnaireUseCaseModule,
+    UserPeerNominationUseCaseModule,
   ],
   providers: [UserUseCaseService],
   exports: [
@@ -26,6 +28,7 @@ import { UserReviewQuestionnaireUseCaseModule } from './user-review/user-review-
     UserTeamMemberUseCaseModule,
     UserReviewUseCaseModule,
     UserReviewQuestionnaireUseCaseModule,
+    UserPeerNominationUseCaseModule,
   ],
 })
 export class UserUseCaseModule {}
