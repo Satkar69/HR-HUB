@@ -83,6 +83,15 @@ export class UserPeerNominationUseCaseService {
         'You are not nominee for this peer nomination',
       );
     }
+    if (peerNomination.nominationStatus === PeerNominationStatusEnum.ACCEPTED) {
+      throw new AppException(
+        {
+          message: 'You cannot change the peer nomination status once accepted',
+        },
+        'You cannot change the peer nomination status once accepted',
+        400,
+      );
+    }
     const updatedPeerNominationStatus =
       this.userPeerNominationFactoryUseCaseService.updatePeerNominationStatus(
         updatePeerNominationStatusDto,
@@ -96,15 +105,15 @@ export class UserPeerNominationUseCaseService {
       PeerNominationStatusEnum.ACCEPTED
     ) {
       const reviewDto = new ReviewDto();
-      const oneWeekFromNow = new Date();
+      const twoWeekFromNow = new Date();
       reviewDto.reviewType = ReviewTypeEnum.PEER;
       reviewDto.reviewer = updatedPeerNomination.nominee.id;
       reviewDto.reviewee = updatedPeerNomination.reviewee.id;
       reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.nominee.fullname}`;
       reviewDto.description = `Please provide a peer review for ${updatedPeerNomination.reviewee.fullname}`;
       reviewDto.progressStatus = ReviewProgressStatusEnum.PENDING;
-      oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 14);
-      reviewDto.dueDate = oneWeekFromNow;
+      twoWeekFromNow.setDate(twoWeekFromNow.getDate() + 14);
+      reviewDto.dueDate = twoWeekFromNow;
 
       const newReview =
         this.reviewFactoryUseCaseService.createReview(reviewDto);
