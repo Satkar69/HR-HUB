@@ -93,12 +93,16 @@ export class UserPeerNominationUseCaseService {
         'You are not nominee for this peer nomination',
       );
     }
-    if (peerNomination.nominationStatus === PeerNominationStatusEnum.ACCEPTED) {
+    if (
+      peerNomination.nominationStatus === PeerNominationStatusEnum.ACCEPTED ||
+      peerNomination.nominationStatus === PeerNominationStatusEnum.DECLINED
+    ) {
       throw new AppException(
         {
-          message: 'You cannot change the peer nomination status once accepted',
+          message:
+            'You cannot change the peer nomination status once accepted or declined',
         },
-        'You cannot change the peer nomination status once accepted',
+        'You cannot change the peer nomination status once accepted or declined',
         400,
       );
     }
