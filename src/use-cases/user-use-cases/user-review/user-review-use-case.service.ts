@@ -80,15 +80,6 @@ export class UserReviewUseCaseService {
     });
   }
 
-  // TODO :: Implement and test this method by making corresponding controller
-  async getMyPeerReviewsAsReviewee(): Promise<IPaginationData> {
-    const userId = this.cls.get<UserClsData>('user')?.id;
-    return await this.dataServices.review.getAll({
-      reviewee: { id: userId },
-      reviewType: ReviewTypeEnum.PEER,
-    });
-  }
-
   async getMyTeamSelfReviews() {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const myTeam = await this.dataServices.team.getOneOrNull({
@@ -105,6 +96,10 @@ export class UserReviewUseCaseService {
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
       });
+
+    if (myTeamMembers.length === 0) {
+      return [];
+    }
     const reviewPromises = await Promise.all(
       myTeamMembers.map(async (teamMember) => {
         return await this.dataServices.review.getOneOrNull({
@@ -136,6 +131,10 @@ export class UserReviewUseCaseService {
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
       });
+
+    if (myTeamMembers.length === 0) {
+      return [];
+    }
     const reviewPromises = await Promise.all(
       myTeamMembers.map(async (teamMember) => {
         return await this.dataServices.review.getOneOrNull({
@@ -148,6 +147,27 @@ export class UserReviewUseCaseService {
     const managerReviews = reviewPromises.filter((review) => review !== null);
 
     return managerReviews;
+  }
+
+  async getMyTeamPeerReviews() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNominations =
+      await this.dataServices.peerNomination.getAllWithoutPagination({
+        nominator: { id: userId },
+      });
+    if (peerNominations.length === 0) {
+      return [];
+    }
+    const reviewPromises = await Promise.all(
+      peerNominations.map(async (peerNomination) => {
+        return await this.dataServices.review.getOneOrNull({
+          reviewer: { id: peerNomination.nominee.id },
+          reviewType: ReviewTypeEnum.PEER,
+        });
+      }),
+    );
+    const peerReviews = reviewPromises.filter((review) => review !== null);
+    return peerReviews;
   }
 
   async createSelfReview(reviewDto: ReviewDto) {

@@ -45,6 +45,16 @@ export class UserPeerNominationUseCaseService {
         400,
       );
     }
+    const existingPeerReview = await this.dataServices.review.getOneOrNull({
+      reviewer: { id: peerNominationDto.nominee },
+    });
+    if (existingPeerReview) {
+      throw new AppException(
+        { message: 'The employee already has an incomplete peer review' },
+        'The employee already has an incomplete peer review',
+        400,
+      );
+    }
     const newPeerNomination =
       this.userPeerNominationFactoryUseCaseService.createPeerNomination({
         ...peerNominationDto,
