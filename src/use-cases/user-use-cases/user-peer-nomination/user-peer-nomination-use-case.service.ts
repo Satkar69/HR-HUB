@@ -74,9 +74,10 @@ export class UserPeerNominationUseCaseService {
 
   async getCreatedPeerMominations() {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const peerNominations = await this.dataServices.peerNomination.getAll({
-      nominator: { id: userId },
-    });
+    const peerNominations =
+      await this.dataServices.peerNomination.getAllWithoutPagination({
+        nominator: { id: userId },
+      });
     return peerNominations;
   }
 
