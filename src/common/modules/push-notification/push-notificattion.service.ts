@@ -7,6 +7,7 @@ import { UserNotificationModel } from 'src/core/models/user-notification.model';
 import { FirebaseService } from '../firebase/firebase.service';
 import { In, IsNull, Not } from 'typeorm';
 import { AdminModel } from 'src/core/models';
+import { SendTestNotificationDto } from 'src/core/dtos/send-test-nottification.dto';
 
 export class CreateNotificationDto {
   title: string;
@@ -275,5 +276,12 @@ export class PushNotificationService {
     } catch (error) {
       console.log('Notification:: error', error);
     }
+  }
+
+  async sendTestNotification(dto: SendTestNotificationDto) {
+    return await this.firebaseService.sendNotification(dto.fcmToken, {
+      title: 'Test notification',
+      body: dto.message,
+    } as NotificationModel);
   }
 }
