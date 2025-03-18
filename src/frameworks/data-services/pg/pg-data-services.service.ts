@@ -23,6 +23,12 @@ import { PeerNominationEntity } from './entities/peer-nomination.entity';
 import { QuestionnaireEntity } from './entities/questionnaire.entity';
 import { QuestionModel } from 'src/core/models/question.model';
 import { QuestionEntity } from './entities/question.entity';
+import { NotificationModel } from 'src/core/models/notification.model';
+import { UserNotificationModel } from 'src/core/models/user-notification.model';
+import { NotificationEntity } from './entities/nottification.entity';
+import { UserNotificationEntity } from './entities/user-notificattion.entity';
+import { NotificationTokenModel } from 'src/core/models/notification-token.model';
+import { NotificationTokenEntity } from './entities/notification-token.entity';
 
 @Injectable()
 export class PgDataServices implements IDataServices, OnApplicationBootstrap {
@@ -34,6 +40,9 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
   peerNomination: PgGenericRepository<PeerNominationModel>;
   questionnaire: PgGenericRepository<QuestionnaireModel>;
   question: PgGenericRepository<QuestionModel>;
+  notification: PgGenericRepository<NotificationModel>;
+  userNotification: PgGenericRepository<UserNotificationModel>;
+  notificationToken: PgGenericRepository<NotificationTokenModel>;
 
   constructor(
     @Inject(AdminEntity.REPOSITORY)
@@ -60,7 +69,17 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
     @Inject(QuestionEntity.REPOSITORY)
     private questionRepository: Repository<QuestionEntity>,
 
+    @Inject(NotificationEntity.REPOSITORY)
+    private notificationRepository: Repository<NotificationEntity>,
+
+    @Inject(UserNotificationEntity.REPOSITORY)
+    private userNotificationRepository: Repository<UserNotificationEntity>,
+
+    @Inject(NotificationTokenEntity.REPOSITORY)
+    private notificationTokenRepository: Repository<NotificationTokenEntity>,
+
     private readonly cls: IClsStore<AppClsStore>,
+
     @Inject(InjectableString.APP_DATA_SOURCE)
     private dataSource: DataSource,
   ) {}
@@ -84,5 +103,17 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
       this.questionnaireRepository,
     );
     this.question = new PgGenericRepository(this.cls, this.questionRepository);
+    this.notification = new PgGenericRepository(
+      this.cls,
+      this.notificationRepository,
+    );
+    this.userNotification = new PgGenericRepository(
+      this.cls,
+      this.userNotificationRepository,
+    );
+    this.notificationToken = new PgGenericRepository(
+      this.cls,
+      this.notificationTokenRepository,
+    );
   }
 }
