@@ -181,8 +181,8 @@ export class UserReviewUseCaseService {
       });
     if (inCompleteSelfReviews.length > 0) {
       throw new AppException(
-        { message: `You already have an incomplete review` },
-        'You already have an incomplete review',
+        { message: `You already have an incomplete self review` },
+        'You already have an incomplete self review',
         409,
       );
     }
@@ -213,6 +213,34 @@ export class UserReviewUseCaseService {
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
+
+    const isTeamMember = await this.dataServices.teamMember.getOneOrNull({
+      member: { id: reviewDto.reviewee },
+    });
+    if (!isTeamMember) {
+      throw new AppException(
+        { message: `The reviewee is not a team member` },
+        'The reviewee is not a team member',
+        400,
+      );
+    }
+
+    const unSubmittedSelfReviews =
+      await this.dataServices.review.getAllWithoutPagination({
+        reviewer: { id: reviewDto.reviewee },
+        reviewee: { id: reviewDto.reviewee },
+        progressStatus: ReviewProgressStatusEnum.PENDING,
+        reviewType: ReviewTypeEnum.SELF,
+      });
+
+    if (unSubmittedSelfReviews.length > 0) {
+      throw new AppException(
+        { message: `The reviewee has not unsubmitted their self review yet` },
+        'The reviewee has not unsubmitted their self review yet',
+        409,
+      );
+    }
+
     const inCompleteManagerReviews =
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
@@ -222,19 +250,11 @@ export class UserReviewUseCaseService {
       });
     if (inCompleteManagerReviews.length > 0) {
       throw new AppException(
-        { message: `The reviewee already has an incomplete review` },
-        'The reviewee already has an incomplete review',
+        {
+          message: `The reviewee already has an incomplete manager review to be done by you`,
+        },
+        'The reviewee already has an incomplete manager review to be done by you',
         409,
-      );
-    }
-    const isTeamMember = await this.dataServices.teamMember.getOneOrNull({
-      member: { id: reviewDto.reviewee },
-    });
-    if (!isTeamMember) {
-      throw new AppException(
-        { message: `The reviewee is not a team member` },
-        'The reviewee is not a team member',
-        400,
       );
     }
     const newReview = this.reviewFactoryUseCaseService.createReview({
