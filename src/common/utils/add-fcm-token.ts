@@ -12,7 +12,7 @@ export async function addFcmToken(
   user?: UserModel,
 ) {
   if (!admin && !user) {
-    throw new AppException({}, 'Investor or Admin is required', 500);
+    throw new AppException({}, 'User or Admin is required', 500);
   }
   const condition: {
     admin?: {
