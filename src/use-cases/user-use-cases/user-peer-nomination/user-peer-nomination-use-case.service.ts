@@ -19,8 +19,6 @@ import { QuestionTypeEnum } from 'src/common/enums/question-type.enum';
 import { CreateQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
 import AppUnauthorizedException from 'src/application/exception/app-unauthorized.exception';
 
-// TODO :: Implement and test all the methods of this service by making corresponding controllers
-
 @Injectable()
 export class UserPeerNominationUseCaseService {
   constructor(

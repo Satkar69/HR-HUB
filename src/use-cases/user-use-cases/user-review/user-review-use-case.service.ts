@@ -71,7 +71,6 @@ export class UserReviewUseCaseService {
     });
   }
 
-  // TODO :: Implement and test this method by making corresponding controller
   async getMyPeerReviewsAsNominee(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
     return await this.dataServices.review.getAll({
@@ -331,7 +330,6 @@ export class UserReviewUseCaseService {
     );
   }
 
-  // TODO :: Implement and test this alternative method to submit review by id
   async submitReviewById(
     reviewId: number,
     updateQuestionnairesDto: UpdateQuestionnairesDto,
