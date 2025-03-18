@@ -4,4 +4,4 @@ import { ReviewEntity } from './review.entity';
 import { UserEntity } from './user.entity';
 
 @Entity('review_summaries')
-export class ReviewSummaryEntity {}
+export class ReviewSummaryEntity extends BaseEntity {}
