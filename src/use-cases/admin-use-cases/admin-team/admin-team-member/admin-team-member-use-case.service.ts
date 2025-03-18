@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 import { IDataServices } from 'src/core/abstracts';
 import { AdminTeamMemberFactoryUseCaseService } from './admin-team-member-factory-use-case.service';
-import {
-  AddTeamMembersDto,
-  CreateTeamMemberDto,
-} from 'src/core/dtos/request/teamMember.dto';
+import { AddTeamMembersDto } from 'src/core/dtos/request/teamMember.dto';
 import AppException from 'src/application/exception/app.exception';
 
 @Injectable()

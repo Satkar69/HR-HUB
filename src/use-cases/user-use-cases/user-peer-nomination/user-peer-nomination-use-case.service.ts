@@ -28,7 +28,7 @@ export class UserPeerNominationUseCaseService {
     private userPeerNominationFactoryUseCaseService: UserPeerNominationFactoryUseCaseService,
     private reviewFactoryUseCaseService: ReviewFactoryUseCaseService,
     private questionnaireFactoryUseCaseService: QuestionnaireFactoryUseCaseService,
-    private cls: IClsStore<AppClsStore>,
+    private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
   async createPeerNomination(peerNominationDto: PeerNominationDto) {
