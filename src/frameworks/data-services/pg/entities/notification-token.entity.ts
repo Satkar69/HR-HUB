@@ -14,6 +14,12 @@ export class NotificationTokenEntity extends BaseEntity {
   admin: AdminEntity;
 
   @Column({
+    name: 'device_id',
+    nullable: false,
+  })
+  deviceId: string;
+
+  @Column({
     name: 'fcm_token',
     nullable: false,
   })

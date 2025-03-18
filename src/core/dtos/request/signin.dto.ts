@@ -37,3 +37,14 @@ export class CheckTokenDto {
   @IsNotEmpty()
   token: string;
 }
+
+export class FcmTokenDto {
+  @IsString()
+  deviceId: string;
+
+  @IsString()
+  fcmToken: string;
+
+  @IsString()
+  deviceType: string;
+}
