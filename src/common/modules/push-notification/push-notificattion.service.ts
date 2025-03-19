@@ -129,17 +129,18 @@ export class PushNotificationService {
       const registrationTokens = userNotificationTokens.map(
         (user) => user.fcmToken,
       );
-      registrationTokens.forEach(async (userToken) => {
+
+      for (let i = 0; i < registrationTokens.length; i++) {
         try {
           await this.firebaseService.sendNotification(
-            userToken,
+            registrationTokens[i],
             notification,
             (options?.data || {}) as any,
           );
         } catch (err) {
           console.log('sending error here', err);
         }
-      });
+      }
     } catch (error) {
       console.log('Notification:: error', error);
     }
@@ -177,17 +178,18 @@ export class PushNotificationService {
       const registrationTokens = adminNotificationTokens.map(
         (admin) => admin.fcmToken,
       );
-      registrationTokens.forEach(async (adminToken) => {
+
+      for (let i = 0; i < registrationTokens.length; i++) {
         try {
           await this.firebaseService.sendNotification(
-            adminToken,
+            registrationTokens[i],
             notification,
             (options?.data || {}) as any,
           );
         } catch (err) {
           console.log('sending error here', err);
         }
-      });
+      }
     } catch (error) {
       console.log('Notification:: error', error);
     }
@@ -222,17 +224,18 @@ export class PushNotificationService {
       const registrationTokens = userNotificationTokens.map(
         (userToken) => userToken.fcmToken,
       );
-      registrationTokens.forEach(async (userToken) => {
+
+      for (let i = 0; i < registrationTokens.length; i++) {
         try {
           await this.firebaseService.sendNotification(
-            userToken,
+            registrationTokens[i],
             notification,
             (options?.data || {}) as any,
           );
         } catch (err) {
           console.log('sending error here', err);
         }
-      });
+      }
     } catch (error) {
       console.log('Notification:: error', error);
     }
