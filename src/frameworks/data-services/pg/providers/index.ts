@@ -12,6 +12,7 @@ import { QuestionEntity } from '../entities/question.entity';
 import { NotificationEntity } from '../entities/nottification.entity';
 import { UserNotificationEntity } from '../entities/user-notificattion.entity';
 import { NotificationTokenEntity } from '../entities/notification-token.entity';
+import { ReviewSummaryEntity } from '../entities/review-summary.entity';
 
 const providers = [
   ...appDataSourceProviders,
@@ -89,6 +90,13 @@ const providers = [
     provide: NotificationTokenEntity.REPOSITORY,
     useFactory: (dataSource: DataSource) => {
       return dataSource.getRepository(NotificationTokenEntity);
+    },
+    inject: [InjectableString.APP_DATA_SOURCE],
+  },
+  {
+    provide: ReviewSummaryEntity.REPOSITORY,
+    useFactory: (dataSource: DataSource) => {
+      return dataSource.getRepository(ReviewSummaryEntity);
     },
     inject: [InjectableString.APP_DATA_SOURCE],
   },

@@ -29,6 +29,8 @@ import { NotificationEntity } from './entities/nottification.entity';
 import { UserNotificationEntity } from './entities/user-notificattion.entity';
 import { NotificationTokenModel } from 'src/core/models/notification-token.model';
 import { NotificationTokenEntity } from './entities/notification-token.entity';
+import { ReviewSummaryModel } from 'src/core/models/review-summary.model';
+import { ReviewSummaryEntity } from './entities/review-summary.entity';
 
 @Injectable()
 export class PgDataServices implements IDataServices, OnApplicationBootstrap {
@@ -43,6 +45,7 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
   notification: PgGenericRepository<NotificationModel>;
   userNotification: PgGenericRepository<UserNotificationModel>;
   notificationToken: PgGenericRepository<NotificationTokenModel>;
+  reviewSummary: PgGenericRepository<ReviewSummaryModel>;
 
   constructor(
     @Inject(AdminEntity.REPOSITORY)
@@ -77,6 +80,9 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
 
     @Inject(NotificationTokenEntity.REPOSITORY)
     private notificationTokenRepository: Repository<NotificationTokenEntity>,
+
+    @Inject(ReviewSummaryEntity.REPOSITORY)
+    private reviewSummaryRepository: Repository<ReviewSummaryEntity>,
 
     private readonly cls: IClsStore<AppClsStore>,
 
@@ -114,6 +120,10 @@ export class PgDataServices implements IDataServices, OnApplicationBootstrap {
     this.notificationToken = new PgGenericRepository(
       this.cls,
       this.notificationTokenRepository,
+    );
+    this.reviewSummary = new PgGenericRepository(
+      this.cls,
+      this.reviewSummaryRepository,
     );
   }
 }
