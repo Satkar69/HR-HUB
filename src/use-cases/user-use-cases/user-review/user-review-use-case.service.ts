@@ -294,11 +294,35 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
-  // TODO :: fix the bug in this code in the second condition
-
   async markReviewAsCompleted(reviewId: number) {
     const userId: number = this.cls.get<UserClsData>('user')?.id;
     const review = await this.dataServices.review.getOne({ id: reviewId });
+
+    const myTeam = await this.dataServices.team.getOneOrNull({
+      leader: { id: userId },
+    });
+
+    if (!myTeam) {
+      throw new AppException(
+        { message: `You are not a team leader` },
+        'You are not a team leader',
+        400,
+      );
+    }
+
+    const teamMember = await this.dataServices.teamMember.getOneOrNull({
+      team: { id: myTeam.id },
+      member: { id: review.reviewee.id },
+    });
+
+    if (!teamMember) {
+      throw new AppException(
+        { message: `The reviewee is not a member of your team` },
+        'The reviewee is not a member of your team',
+        400,
+      );
+    }
+
     if (review.progressStatus === ReviewProgressStatusEnum.COMPLETED) {
       throw new AppException(
         { message: `Review already completed` },
@@ -315,8 +339,6 @@ export class UserReviewUseCaseService {
       );
     }
     if (review.reviewType === ReviewTypeEnum.SELF) {
-      console.log('I am inside the if 1 ------------- ');
-
       const managerReviews =
         await this.dataServices.review.getAllWithoutPagination({
           reviewer: { id: userId },
@@ -328,8 +350,6 @@ export class UserReviewUseCaseService {
         managerReview &&
         managerReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
       ) {
-        console.log('I am inside the if 2 ------------- ');
-
         const selfQuestionnaires =
           await this.dataServices.questionnaire.getAllWithoutPagination({
             review: { id: review.id },
@@ -380,26 +400,20 @@ export class UserReviewUseCaseService {
         await this.dataServices.reviewSummary.create(newReviewSummary);
       }
     } else if (review.reviewType === ReviewTypeEnum.MANAGER) {
-      console.log('I am inside the if 3 ------------- ');
-
       const employeeSelfReviews =
         await this.dataServices.review.getAllWithoutPagination({
-          reviewer: { id: userId },
+          reviewer: { id: review.reviewee.id },
           reviewee: { id: review.reviewee.id },
           reviewType: ReviewTypeEnum.SELF,
         });
-      console.log('employeeSelfReviews----------------->', employeeSelfReviews);
 
       const employeeSelfReview =
         employeeSelfReviews[employeeSelfReviews.length - 1];
 
-      console.log('employeeSelfReview----------------->', employeeSelfReview);
       if (
         employeeSelfReview &&
         employeeSelfReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
       ) {
-        console.log('I am inside the if 4 ------------- ');
-
         const selfQuestionnaires =
           await this.dataServices.questionnaire.getAllWithoutPagination({
             review: { id: employeeSelfReview.id },
