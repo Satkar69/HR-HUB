@@ -34,24 +34,24 @@ export class UserAuthUseCaseService {
       throw new AppException({}, 'Incorrect Email or Password', 400);
     }
 
-    if (!signinDto.deviceId || !signinDto.fcmToken || !signinDto.deviceType) {
-      throw new AppException(
-        {},
-        'Device Id, Fcm Token and Device Type are required',
-        400,
-      );
-    }
+    // if (!signinDto.deviceId || !signinDto.fcmToken || !signinDto.deviceType) {
+    //   throw new AppException(
+    //     {},
+    //     'Device Id, Fcm Token and Device Type are required',
+    //     400,
+    //   );
+    // }
 
-    await addFcmToken(
-      this.dataServices,
-      {
-        deviceId: signinDto.deviceId,
-        fcmToken: signinDto.fcmToken,
-        deviceType: signinDto.deviceType,
-      },
-      null,
-      user,
-    );
+    // await addFcmToken(
+    //   this.dataServices,
+    //   {
+    //     deviceId: signinDto.deviceId,
+    //     fcmToken: signinDto.fcmToken,
+    //     deviceType: signinDto.deviceType,
+    //   },
+    //   null,
+    //   user,
+    // );
 
     const payload = { sub: user.email };
     const accessToken = await this._jwtService.createToken(payload);

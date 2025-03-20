@@ -9,6 +9,7 @@ import { UserPeerNominationUseCaseModule } from './user-peer-nomination/user-pee
 import { UserTeamMemberUseCaseService } from './user-team/user-team-member/user-team-member-use-case.service';
 import { UserTeamUseCaseService } from './user-team/user-team-use-case.service';
 import { UserNotificationUseCaseService } from './user-notification/user-notification-use-case.service';
+import { UserReviewSummaryUseCaseModule } from './user-review/user-review-summary/user-review-summary-use-case.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserNotificationUseCaseService } from './user-notification/user-notific
     UserReviewUseCaseModule,
     UserReviewQuestionnaireUseCaseModule,
     UserPeerNominationUseCaseModule,
+    UserReviewSummaryUseCaseModule,
   ],
   providers: [
     UserUseCaseService,
@@ -31,6 +33,7 @@ import { UserNotificationUseCaseService } from './user-notification/user-notific
     UserReviewUseCaseModule,
     UserReviewQuestionnaireUseCaseModule,
     UserPeerNominationUseCaseModule,
+    UserReviewSummaryUseCaseModule,
     UserTeamUseCaseService,
     UserTeamMemberUseCaseService,
     UserNotificationUseCaseService,
