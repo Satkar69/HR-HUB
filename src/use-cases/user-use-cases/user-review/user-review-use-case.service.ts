@@ -175,29 +175,35 @@ export class UserReviewUseCaseService {
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
 
-    const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination({
-        reviewee: { id: userId },
+    const selfReviews = await this.dataServices.review.getAllWithoutPagination({
+      reviewer: { id: userId },
+      reviewee: { id: userId },
+      reviewType: ReviewTypeEnum.SELF,
+    });
+
+    if (selfReviews.length > 0 && selfReviews.length < 2) {
+      if (
+        selfReviews[0].progressStatus !== ReviewProgressStatusEnum.COMPLETED
+      ) {
+        throw new AppException(
+          { message: `You already have an incomplete self review` },
+          'You already have an incomplete self review',
+          409,
+        );
+      }
+    } else if (
+      selfReviews[0].progressStatus === ReviewProgressStatusEnum.COMPLETED
+    ) {
+      const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+        selfReview: { id: selfReviews[0].id },
       });
-
-    if (reviewSummaries.length === 0) {
-      throw new AppException(
-        {
-          message: `You must have a review summary that has not been created by your manager yet`,
-        },
-        'You must have a review summary that has not been created by your manager yet',
-        400,
-      );
-    }
-
-    if (reviewSummaries[reviewSummaries.length - 1].isAcknowledged === false) {
-      throw new AppException(
-        {
-          message: `You must acknowledge your latest review summary before creating new self review`,
-        },
-        'You must acknowledge your latest review summary before creating new self review',
-        400,
-      );
+      if (!reviewSummary.isAcknowledged) {
+        throw new AppException(
+          { message: `You have an unacknowledged review summary` },
+          'You have an unacknowledged review summary',
+          409,
+        );
+      }
     }
 
     const newReview = this.reviewFactoryUseCaseService.createReview({
@@ -224,7 +230,6 @@ export class UserReviewUseCaseService {
     await this.dataServices.questionnaire.createBulk(questionnaires);
     return createdReview;
   }
-
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
@@ -240,47 +245,55 @@ export class UserReviewUseCaseService {
         400,
       );
     }
-
-    const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination({
-        reviewee: { id: reviewDto.reviewee },
-      });
-
-    if (reviewSummaries.length === 0) {
-      throw new AppException(
-        {
-          message: `You must have a review summary created for the reviewee that needs to be acknowledged by the reviewee`,
-        },
-        'You must a review summary created for the reviewee that needs to be acknowledged by the reviewee',
-        400,
-      );
-    }
-
-    if (reviewSummaries[reviewSummaries.length - 1].isAcknowledged === false) {
-      throw new AppException(
-        {
-          message: `The reviewee must have acknowledged their latest review summary`,
-        },
-        'The reviewee must have acknowledged their latest review summary',
-        400,
-      );
-    }
-
-    const unSubmittedSelfReviews =
+    const revieweeSelfReviews =
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: reviewDto.reviewee },
         reviewee: { id: reviewDto.reviewee },
-        progressStatus: ReviewProgressStatusEnum.PENDING,
         reviewType: ReviewTypeEnum.SELF,
       });
 
-    if (unSubmittedSelfReviews.length > 0) {
-      throw new AppException(
-        { message: `The reviewee has not submitted their self review yet` },
-        'The reviewee has not submitted their self review yet',
-        409,
-      );
+    if (revieweeSelfReviews.length > 0 && revieweeSelfReviews.length < 2) {
+      if (
+        revieweeSelfReviews[0].progressStatus !==
+        ReviewProgressStatusEnum.COMPLETED
+      ) {
+        throw new AppException(
+          { message: `The reviewee's review is yet to be mark as completed` },
+          `The reviewee's review is yet to be mark as completed`,
+          409,
+        );
+      }
+    } else if (
+      revieweeSelfReviews[0].progressStatus ===
+      ReviewProgressStatusEnum.COMPLETED
+    ) {
+      const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+        selfReview: { id: revieweeSelfReviews[0].id },
+      });
+      if (!reviewSummary.isAcknowledged) {
+        throw new AppException(
+          { message: `The reviewee has an unacknowledged review summary` },
+          'The reviewee has an unacknowledged review summary',
+          409,
+        );
+      }
     }
+
+    // const unSubmittedSelfReviews =
+    //   await this.dataServices.review.getAllWithoutPagination({
+    //     reviewer: { id: reviewDto.reviewee },
+    //     reviewee: { id: reviewDto.reviewee },
+    //     progressStatus: ReviewProgressStatusEnum.PENDING,
+    //     reviewType: ReviewTypeEnum.SELF,
+    //   });
+
+    // if (unSubmittedSelfReviews.length > 0) {
+    //   throw new AppException(
+    //     { message: `The reviewee has not submitted their self review yet` },
+    //     'The reviewee has not submitted their self review yet',
+    //     409,
+    //   );
+    // }
 
     const inCompleteManagerReviews =
       await this.dataServices.review.getAllWithoutPagination({
