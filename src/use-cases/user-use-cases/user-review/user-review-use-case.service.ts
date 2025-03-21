@@ -175,20 +175,31 @@ export class UserReviewUseCaseService {
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
 
-    const inCompleteSelfReviews =
-      await this.dataServices.review.getAllWithoutPagination({
-        reviewer: { id: userId },
+    const reviewSummaries =
+      await this.dataServices.reviewSummary.getAllWithoutPagination({
         reviewee: { id: userId },
-        progressStatus: Not(ReviewProgressStatusEnum.COMPLETED),
-        reviewType: ReviewTypeEnum.SELF,
       });
-    if (inCompleteSelfReviews.length > 0) {
+
+    if (reviewSummaries.length === 0) {
       throw new AppException(
-        { message: `You already have an incomplete self review` },
-        'You already have an incomplete self review',
-        409,
+        {
+          message: `You must have a review summary that has not been created by your manager yet`,
+        },
+        'You must have a review summary that has not been created by your manager yet',
+        400,
       );
     }
+
+    if (reviewSummaries[reviewSummaries.length - 1].isAcknowledged === false) {
+      throw new AppException(
+        {
+          message: `You must acknowledge your latest review summary before creating new self review`,
+        },
+        'You must acknowledge your latest review summary before creating new self review',
+        400,
+      );
+    }
+
     const newReview = this.reviewFactoryUseCaseService.createReview({
       ...reviewDto,
       reviewType: ReviewTypeEnum.SELF,
@@ -213,6 +224,7 @@ export class UserReviewUseCaseService {
     await this.dataServices.questionnaire.createBulk(questionnaires);
     return createdReview;
   }
+
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
@@ -225,6 +237,31 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `The reviewee is not a team member` },
         'The reviewee is not a team member',
+        400,
+      );
+    }
+
+    const reviewSummaries =
+      await this.dataServices.reviewSummary.getAllWithoutPagination({
+        reviewee: { id: reviewDto.reviewee },
+      });
+
+    if (reviewSummaries.length === 0) {
+      throw new AppException(
+        {
+          message: `You must have a review summary created for the reviewee that needs to be acknowledged by the reviewee`,
+        },
+        'You must a review summary created for the reviewee that needs to be acknowledged by the reviewee',
+        400,
+      );
+    }
+
+    if (reviewSummaries[reviewSummaries.length - 1].isAcknowledged === false) {
+      throw new AppException(
+        {
+          message: `The reviewee must have acknowledged their latest review summary`,
+        },
+        'The reviewee must have acknowledged their latest review summary',
         400,
       );
     }
