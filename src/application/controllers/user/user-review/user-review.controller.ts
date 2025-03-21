@@ -36,6 +36,14 @@ export class UserReviewController {
     );
   }
 
+  @Get('/my/peer/get-all')
+  async getMyPeerReviews(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
+      await this.userReviewUseCaseService.getMyPeerReviewsAsNominee(),
+      query,
+    );
+  }
+
   @Post('/self/create')
   async createSelfReview(@Body() reviewDto: ReviewDto) {
     return CoreApiResponse.success(
@@ -73,6 +81,14 @@ export class UserReviewController {
   }
 
   @Manager()
+  @Get('/my-team/peer/get-all')
+  async getMyTeamMembersPeerReviews() {
+    return CoreApiResponse.success(
+      await this.userReviewUseCaseService.getMyTeamPeerReviews(),
+    );
+  }
+
+  @Manager()
   @Post('/manager/create')
   async createManagerReview(@Body() reviewDto: ReviewDto) {
     return CoreApiResponse.success(
@@ -80,7 +96,6 @@ export class UserReviewController {
     );
   }
 
-  // TODO :: test the route in postman
   @Manager()
   @Patch('/mark-as-complete/:id')
   async markAsComplete(@Param('id') reviewId: number) {

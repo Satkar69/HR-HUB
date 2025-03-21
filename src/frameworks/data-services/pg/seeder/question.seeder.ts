@@ -15,47 +15,92 @@ export class QuestionSeeder {
           questionType: QuestionTypeEnum.SELF,
           questionId: 1,
           questionText:
-            'On a scale of 1-5, how would you rate your overall performance in the last review period?',
+            'How would you rate your overall performance? (1-5 scale)',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 2,
           questionText:
-            'What achievements are you most proud of during this period?',
+            'How well do you manage deadlines and tasks? (1-5 scale)',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 3,
-          questionText:
-            'What challenges did you face, and how did you overcome them?',
+          questionText: 'What achievements are you most proud of?',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 4,
           questionText:
-            'How effectively do you manage your time and prioritize tasks?',
+            'How effectively do you communicate with your team? (1-5 scale)',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 5,
-          questionText:
-            'What skills or areas do you think you need to improve?',
+          questionText: 'What are your strongest skills or qualities?',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 6,
-          questionText: 'How well do you collaborate with your team members?',
+          questionText: 'Are there any areas where you need improvement?',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 7,
           questionText:
-            'What support or resources do you need to perform better?',
+            'How proactive are you in problem-solving and decision-making? (1-5 scale)',
         },
         {
           questionType: QuestionTypeEnum.SELF,
           questionId: 8,
-          questionText: 'What are your goals for the next review period?',
+          questionText: 'What development opportunities would benefit you?',
+        },
+      ];
+
+      const managerReviewQuestions = [
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 1,
+          questionText:
+            'How would you rate XYZ’s overall performance? (1-5 scale)',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 2,
+          questionText:
+            'How well does XYZ manage deadlines and tasks? (1-5 scale)',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 3,
+          questionText: 'What achievements has XYZ made?',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 4,
+          questionText:
+            'How effectively does XYZ communicate with the team? (1-5 scale)',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 5,
+          questionText: 'What are XYZ’s strongest skills or qualities?',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 6,
+          questionText: 'Are there any areas where XYZ needs improvement?',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 7,
+          questionText:
+            'How proactive is XYZ in problem-solving and decision-making? (1-5 scale)',
+        },
+        {
+          questionType: QuestionTypeEnum.MANAGER,
+          questionId: 8,
+          questionText: 'What development opportunities would benefit XYZ?',
         },
       ];
       const peerReviewQuestions = [
@@ -86,7 +131,7 @@ export class QuestionSeeder {
           questionType: QuestionTypeEnum.PEER,
           questionId: 5,
           questionText:
-            'How well does XYZ handle constructive feedback? (1 = Poorly, 5 = Very Well)',
+            'How well does XYZ handle constructive feedback? (1-5 scale)',
         },
         {
           questionType: QuestionTypeEnum.PEER,
@@ -103,53 +148,6 @@ export class QuestionSeeder {
           questionId: 8,
           questionText:
             'Would you feel confident working with XYZ on a critical project? (Yes/No + Why?)',
-        },
-      ];
-
-      const managerReviewQuestions = [
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 1,
-          questionText:
-            'How would you rate XYZ’s overall performance? (1-5 scale)',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 2,
-          questionText:
-            'How well does XYZ meet deadlines and manage tasks? (1-5 scale)',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 3,
-          questionText: 'In what ways has XYZ contributed to team success?',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 4,
-          questionText:
-            'How effectively does XYZ communicate with colleagues and leadership? (1-5 scale)',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 5,
-          questionText: 'What are XYZ’s strongest skills or qualities?',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 6,
-          questionText: 'Are there any areas where XYZ needs improvement?',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 7,
-          questionText:
-            'How proactive is XYZ in problem-solving and decision-making? (1-5 scale)',
-        },
-        {
-          questionType: QuestionTypeEnum.MANAGER,
-          questionId: 8,
-          questionText: 'What development opportunities would benefit XYZ?',
         },
       ];
 

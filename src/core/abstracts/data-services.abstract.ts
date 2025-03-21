@@ -8,6 +8,10 @@ import { ReviewModel } from '../models/review.model';
 import { PeerNominationModel } from '../models/peer-nomination.model';
 import { QuestionnaireModel } from '../models/questionnaire.model';
 import { QuestionModel } from '../models/question.model';
+import { NotificationModel } from '../models/notification.model';
+import { UserNotificationModel } from '../models/user-notification.model';
+import { NotificationTokenModel } from '../models/notification-token.model';
+import { ReviewSummaryModel } from '../models/review-summary.model';
 
 export abstract class IDataServices {
   abstract admin: IAdminRepository<AdminModel>;
@@ -18,4 +22,8 @@ export abstract class IDataServices {
   abstract peerNomination: IGenericRepository<PeerNominationModel>;
   abstract questionnaire: IGenericRepository<QuestionnaireModel>;
   abstract question: IGenericRepository<QuestionModel>;
+  abstract notification: IGenericRepository<NotificationModel>;
+  abstract userNotification: IGenericRepository<UserNotificationModel>;
+  abstract notificationToken: IGenericRepository<NotificationTokenModel>;
+  abstract reviewSummary: IGenericRepository<ReviewSummaryModel>;
 }

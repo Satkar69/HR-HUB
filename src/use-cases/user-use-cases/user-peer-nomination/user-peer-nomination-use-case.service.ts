@@ -17,8 +17,7 @@ import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
 import { QuestionTypeEnum } from 'src/common/enums/question-type.enum';
 import { CreateQuestionnaireDto } from 'src/core/dtos/request/questionnaire.dto';
-
-// TODO :: Implement and test all the methods of this service by making corresponding controllers
+import AppUnauthorizedException from 'src/application/exception/app-unauthorized.exception';
 
 @Injectable()
 export class UserPeerNominationUseCaseService {
@@ -27,10 +26,11 @@ export class UserPeerNominationUseCaseService {
     private userPeerNominationFactoryUseCaseService: UserPeerNominationFactoryUseCaseService,
     private reviewFactoryUseCaseService: ReviewFactoryUseCaseService,
     private questionnaireFactoryUseCaseService: QuestionnaireFactoryUseCaseService,
-    private cls: IClsStore<AppClsStore>,
+    private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
   async createPeerNomination(peerNominationDto: PeerNominationDto) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
     const existingPeerNomination =
       await this.dataServices.peerNomination.getOneOrNull({
         nominee: { id: peerNominationDto.nominee },
@@ -43,9 +43,20 @@ export class UserPeerNominationUseCaseService {
         400,
       );
     }
+    const existingPeerReview = await this.dataServices.review.getOneOrNull({
+      reviewer: { id: peerNominationDto.nominee },
+    });
+    if (existingPeerReview) {
+      throw new AppException(
+        { message: 'The employee already has an incomplete peer review' },
+        'The employee already has an incomplete peer review',
+        400,
+      );
+    }
     const newPeerNomination =
       this.userPeerNominationFactoryUseCaseService.createPeerNomination({
         ...peerNominationDto,
+        nominator: userId,
         nominationStatus: PeerNominationStatusEnum.PENDING,
       });
     return this.dataServices.peerNomination.create(newPeerNomination);
@@ -59,10 +70,41 @@ export class UserPeerNominationUseCaseService {
     return peerNomination;
   }
 
-  async assignedPeerNominationAction(
+  async getCreatedPeerMominations() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNominations =
+      await this.dataServices.peerNomination.getAllWithoutPagination({
+        nominator: { id: userId },
+      });
+    return peerNominations;
+  }
+
+  async assignedPeerNominationStatusAction(
     peerNominationId: number,
     updatePeerNominationStatusDto: UpdatePeerNominationStatusDto,
   ) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNomination = await this.dataServices.peerNomination.getOneOrNull({
+      nominee: { id: userId },
+    });
+    if (!peerNomination) {
+      throw new AppUnauthorizedException(
+        'You are not nominee for this peer nomination',
+      );
+    }
+    if (
+      peerNomination.nominationStatus === PeerNominationStatusEnum.ACCEPTED ||
+      peerNomination.nominationStatus === PeerNominationStatusEnum.DECLINED
+    ) {
+      throw new AppException(
+        {
+          message:
+            'You cannot change the peer nomination status once accepted or declined',
+        },
+        'You cannot change the peer nomination status once accepted or declined',
+        400,
+      );
+    }
     const updatedPeerNominationStatus =
       this.userPeerNominationFactoryUseCaseService.updatePeerNominationStatus(
         updatePeerNominationStatusDto,
@@ -76,15 +118,15 @@ export class UserPeerNominationUseCaseService {
       PeerNominationStatusEnum.ACCEPTED
     ) {
       const reviewDto = new ReviewDto();
-      const oneWeekFromNow = new Date();
+      const twoWeekFromNow = new Date();
       reviewDto.reviewType = ReviewTypeEnum.PEER;
       reviewDto.reviewer = updatedPeerNomination.nominee.id;
       reviewDto.reviewee = updatedPeerNomination.reviewee.id;
-      reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.reviewee.fullname}`;
+      reviewDto.subject = `Peer Review for ${updatedPeerNomination.reviewee.fullname} by ${updatedPeerNomination.nominee.fullname}`;
       reviewDto.description = `Please provide a peer review for ${updatedPeerNomination.reviewee.fullname}`;
       reviewDto.progressStatus = ReviewProgressStatusEnum.PENDING;
-      oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 14);
-      reviewDto.dueDate = oneWeekFromNow;
+      twoWeekFromNow.setDate(twoWeekFromNow.getDate() + 14);
+      reviewDto.dueDate = twoWeekFromNow;
 
       const newReview =
         this.reviewFactoryUseCaseService.createReview(reviewDto);

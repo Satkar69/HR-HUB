@@ -5,14 +5,16 @@ import { QuestionnaireUseCaseModule } from 'src/use-cases/questioninaire-use-cas
 import { DataServicesModule } from 'src/services/data-services/data-services.module';
 import { ClsServiceModule } from 'src/libs/cls-store/cls-store.module';
 import { UserReviewQuestionnaireUseCaseModule } from './user-review-questionnaire/user-review-questionnaire-use-case.module';
+import { UserReviewSummaryUseCaseModule } from './user-review-summary/user-review-summary-use-case.module';
 
 @Module({
   imports: [
+    ClsServiceModule,
+    DataServicesModule,
     ReviewUseCaseModule,
     QuestionnaireUseCaseModule,
     UserReviewQuestionnaireUseCaseModule,
-    DataServicesModule,
-    ClsServiceModule,
+    UserReviewSummaryUseCaseModule,
   ],
   providers: [UserReviewUseCaseService],
   exports: [UserReviewUseCaseService],

@@ -29,7 +29,7 @@ export class UserTeamUseCaseService {
         throw new AppException(
           { message: `You are not a member of any team` },
           'You are not a member of any team',
-          400,
+          404,
         );
       }
       const team = await this.dataServices.team.getOne({
@@ -49,7 +49,7 @@ export class UserTeamUseCaseService {
       throw new AppException(
         { message: `You are not assigned to any team as a leader` },
         'You are not assigned to any team as a leader',
-        400,
+        404,
       );
     }
     const teamMembers =

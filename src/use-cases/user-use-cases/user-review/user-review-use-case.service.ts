@@ -18,6 +18,8 @@ import { UserRoleEnum } from 'src/common/enums/user-role.enum';
 import { UserReviewQuestionnaireFactoryUseCaseService } from './user-review-questionnaire/user-review-questionnaire-factory-use-case.service';
 import { UpdateQuestionnairesDto } from 'src/core/dtos/request/questionnaire.dto';
 import { Not } from 'typeorm';
+import { UserReviewSummaryFactoryUseCaseService } from './user-review-summary/user-review-summary-factory-use-case.service';
+import { CreateReviewSummaryDto } from 'src/core/dtos/review-summary.dto';
 
 @Injectable()
 export class UserReviewUseCaseService {
@@ -26,6 +28,7 @@ export class UserReviewUseCaseService {
     private reviewFactoryUseCaseService: ReviewFactoryUseCaseService,
     private questionnaireFactroyUseCaseService: QuestionnaireFactoryUseCaseService,
     private userReviewQuestionnaireFactoryUseCaseService: UserReviewQuestionnaireFactoryUseCaseService,
+    private userReviewSummaryFactoryUseCaseService: UserReviewSummaryFactoryUseCaseService,
     private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
@@ -58,7 +61,7 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not a member of any team` },
         'You are not a member of any team',
-        400,
+        404,
       );
     }
     const myTeam = await this.dataServices.team.getOneOrNull({
@@ -71,20 +74,10 @@ export class UserReviewUseCaseService {
     });
   }
 
-  // TODO :: Implement and test this method by making corresponding controller
   async getMyPeerReviewsAsNominee(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
     return await this.dataServices.review.getAll({
       reviewer: { id: userId },
-      reviewType: ReviewTypeEnum.PEER,
-    });
-  }
-
-  // TODO :: Implement and test this method by making corresponding controller
-  async getMyPeerReviewsAsReviewee(): Promise<IPaginationData> {
-    const userId = this.cls.get<UserClsData>('user')?.id;
-    return await this.dataServices.review.getAll({
-      reviewee: { id: userId },
       reviewType: ReviewTypeEnum.PEER,
     });
   }
@@ -98,13 +91,17 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not not assigned to any team as a leader` },
         'You are not not assigned to any team as a leader',
-        400,
+        404,
       );
     }
     const myTeamMembers =
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
       });
+
+    if (myTeamMembers.length === 0) {
+      return [];
+    }
     const reviewPromises = await Promise.all(
       myTeamMembers.map(async (teamMember) => {
         return await this.dataServices.review.getOneOrNull({
@@ -129,13 +126,17 @@ export class UserReviewUseCaseService {
       throw new AppException(
         { message: `You are not not assigned to any team as a leader` },
         'You are not not assigned to any team as a leader',
-        400,
+        404,
       );
     }
     const myTeamMembers =
       await this.dataServices.teamMember.getAllWithoutPagination({
         team: { id: myTeam.id },
       });
+
+    if (myTeamMembers.length === 0) {
+      return [];
+    }
     const reviewPromises = await Promise.all(
       myTeamMembers.map(async (teamMember) => {
         return await this.dataServices.review.getOneOrNull({
@@ -150,23 +151,59 @@ export class UserReviewUseCaseService {
     return managerReviews;
   }
 
+  async getMyTeamPeerReviews() {
+    const userId = this.cls.get<UserClsData>('user')?.id;
+    const peerNominations =
+      await this.dataServices.peerNomination.getAllWithoutPagination({
+        nominator: { id: userId },
+      });
+    if (peerNominations.length === 0) {
+      return [];
+    }
+    const reviewPromises = await Promise.all(
+      peerNominations.map(async (peerNomination) => {
+        return await this.dataServices.review.getOneOrNull({
+          reviewer: { id: peerNomination.nominee.id },
+          reviewType: ReviewTypeEnum.PEER,
+        });
+      }),
+    );
+    const peerReviews = reviewPromises.filter((review) => review !== null);
+    return peerReviews;
+  }
+
   async createSelfReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
 
-    const inCompleteSelfReviews =
-      await this.dataServices.review.getAllWithoutPagination({
-        reviewer: { id: userId },
-        reviewee: { id: userId },
-        progressStatus: Not(ReviewProgressStatusEnum.COMPLETED),
-        reviewType: ReviewTypeEnum.SELF,
-      });
-    if (inCompleteSelfReviews.length > 0) {
+    const selfReviews = await this.dataServices.review.getAllWithoutPagination({
+      reviewer: { id: userId },
+      reviewee: { id: userId },
+      reviewType: ReviewTypeEnum.SELF,
+    });
+
+    if (selfReviews.length > 0) {
+      if (
+        selfReviews[selfReviews.length - 1].progressStatus !==
+        ReviewProgressStatusEnum.COMPLETED
+      ) {
+        throw new AppException(
+          { message: `You already have an incomplete self review` },
+          'You already have an incomplete self review',
+          409,
+        );
+      }
+    }
+    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+      selfReview: { id: selfReviews[selfReviews.length - 1].id },
+    });
+    if (reviewSummary.isAcknowledged !== true) {
       throw new AppException(
-        { message: `You already have an incomplete review` },
-        'You already have an incomplete review',
+        { message: `You have an unacknowledged review summary` },
+        'You have an unacknowledged review summary',
         409,
       );
     }
+
     const newReview = this.reviewFactoryUseCaseService.createReview({
       ...reviewDto,
       reviewType: ReviewTypeEnum.SELF,
@@ -194,6 +231,50 @@ export class UserReviewUseCaseService {
   // manager
   async createManagerReview(reviewDto: ReviewDto) {
     const userId = this.cls.get<UserClsData>('user')?.id;
+
+    const isTeamMember = await this.dataServices.teamMember.getOneOrNull({
+      member: { id: reviewDto.reviewee },
+    });
+
+    if (!isTeamMember) {
+      throw new AppException(
+        { message: `The reviewee is not a team member` },
+        'The reviewee is not a team member',
+        400,
+      );
+    }
+    const revieweeSelfReviews =
+      await this.dataServices.review.getAllWithoutPagination({
+        reviewer: { id: reviewDto.reviewee },
+        reviewee: { id: reviewDto.reviewee },
+        reviewType: ReviewTypeEnum.SELF,
+      });
+
+    if (revieweeSelfReviews.length > 0) {
+      if (
+        revieweeSelfReviews[revieweeSelfReviews.length - 1].progressStatus !==
+        ReviewProgressStatusEnum.COMPLETED
+      ) {
+        throw new AppException(
+          { message: `The reviewee's review is yet to be mark as completed` },
+          `The reviewee's review is yet to be mark as completed`,
+          409,
+        );
+      }
+    }
+    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+      selfReview: {
+        id: revieweeSelfReviews[revieweeSelfReviews.length - 1].id,
+      },
+    });
+    if (!reviewSummary.isAcknowledged) {
+      throw new AppException(
+        { message: `The reviewee has an unacknowledged review summary` },
+        'The reviewee has an unacknowledged review summary',
+        409,
+      );
+    }
+
     const inCompleteManagerReviews =
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
@@ -203,19 +284,11 @@ export class UserReviewUseCaseService {
       });
     if (inCompleteManagerReviews.length > 0) {
       throw new AppException(
-        { message: `The reviewee already has an incomplete review` },
-        'The reviewee already has an incomplete review',
+        {
+          message: `The reviewee already has an incomplete manager review to be done by you`,
+        },
+        'The reviewee already has an incomplete manager review to be done by you',
         409,
-      );
-    }
-    const isTeamMember = await this.dataServices.teamMember.getOneOrNull({
-      member: { id: reviewDto.reviewee },
-    });
-    if (!isTeamMember) {
-      throw new AppException(
-        { message: `The reviewee is not a team member` },
-        'The reviewee is not a team member',
-        400,
       );
     }
     const newReview = this.reviewFactoryUseCaseService.createReview({
@@ -251,41 +324,35 @@ export class UserReviewUseCaseService {
     return createdReview;
   }
 
-  // async submitReviewById(reviewId: number) {
-  //   const review = await this.dataServices.review.getOne({ id: reviewId });
-  //   if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
-  //     throw new AppException(
-  //       { message: `Review already submitted` },
-  //       'Review already submitted',
-  //       400,
-  //     );
-  //   }
-  //   const reviewQuestionnaires =
-  //     await this.dataServices.questionnaire.getAllWithoutPagination({
-  //       review: { id: review.id },
-  //     });
-  //   const isIncompleteAnswers = reviewQuestionnaires.some((questionnaire) => {
-  //     return questionnaire.answers.length === 0;
-  //   });
-  //   if (isIncompleteAnswers) {
-  //     throw new AppException(
-  //       { message: `You have some incomplete answers` },
-  //       'You have some incomplete answers',
-  //       400,
-  //     );
-  //   }
-  //   const reviewDto = new ReviewDto();
-  //   reviewDto.progressStatus = ReviewProgressStatusEnum.SUBMITTED;
-  //   const updatedReview =
-  //     this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
-  //   return await this.dataServices.review.update(
-  //     { id: review.id },
-  //     updatedReview,
-  //   );
-  // }
-
   async markReviewAsCompleted(reviewId: number) {
+    const userId: number = this.cls.get<UserClsData>('user')?.id;
     const review = await this.dataServices.review.getOne({ id: reviewId });
+
+    const myTeam = await this.dataServices.team.getOneOrNull({
+      leader: { id: userId },
+    });
+
+    if (!myTeam) {
+      throw new AppException(
+        { message: `You are not a team leader` },
+        'You are not a team leader',
+        400,
+      );
+    }
+
+    const teamMember = await this.dataServices.teamMember.getOneOrNull({
+      team: { id: myTeam.id },
+      member: { id: review.reviewee.id },
+    });
+
+    if (!teamMember) {
+      throw new AppException(
+        { message: `The reviewee is not a member of your team` },
+        'The reviewee is not a member of your team',
+        400,
+      );
+    }
+
     if (review.progressStatus === ReviewProgressStatusEnum.COMPLETED) {
       throw new AppException(
         { message: `Review already completed` },
@@ -301,8 +368,136 @@ export class UserReviewUseCaseService {
         400,
       );
     }
+    if (review.reviewType === ReviewTypeEnum.SELF) {
+      const managerReviews =
+        await this.dataServices.review.getAllWithoutPagination({
+          reviewer: { id: userId },
+          reviewee: { id: review.reviewee.id },
+          reviewType: ReviewTypeEnum.MANAGER,
+        });
+
+      const managerReview = managerReviews[managerReviews.length - 1];
+
+      if (
+        managerReview &&
+        managerReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
+      ) {
+        const selfQuestionnaires =
+          await this.dataServices.questionnaire.getAllWithoutPagination({
+            review: { id: review.id },
+          });
+        const managerQuestionnaires =
+          await this.dataServices.questionnaire.getAllWithoutPagination({
+            review: { id: managerReview.id },
+          });
+
+        const summaryQuestionnaire = [];
+        const averageRatings = [];
+        for (let i = 0; i < managerQuestionnaires.length; i++) {
+          summaryQuestionnaire.push({
+            question: managerQuestionnaires[i].question,
+            managerFeedback: {
+              answers: managerQuestionnaires[i].answers,
+              ratings: managerQuestionnaires[i].ratings,
+            },
+            revieweeFeedback: {
+              answers: selfQuestionnaires[i].answers,
+              ratings: selfQuestionnaires[i].ratings,
+            },
+          });
+          // averaging ratings of each iteration
+          averageRatings.push(
+            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+              2,
+          );
+        }
+
+        // total sum of all number elements in the averateRatings array
+        const finalAverageRatings =
+          averageRatings.reduce((acc, curr) => acc + curr, 0) /
+          averageRatings.length;
+
+        const createReviewSummaryDto = new CreateReviewSummaryDto();
+        createReviewSummaryDto.reviewee = review.reviewee.id;
+        createReviewSummaryDto.selfReview = review.id;
+        createReviewSummaryDto.managerReview = managerReview.id;
+        createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
+        createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
+        createReviewSummaryDto.isAcknowledged = false;
+
+        const newReviewSummary =
+          this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
+            createReviewSummaryDto,
+          );
+        await this.dataServices.reviewSummary.create(newReviewSummary);
+      }
+    } else if (review.reviewType === ReviewTypeEnum.MANAGER) {
+      const employeeSelfReviews =
+        await this.dataServices.review.getAllWithoutPagination({
+          reviewer: { id: review.reviewee.id },
+          reviewee: { id: review.reviewee.id },
+          reviewType: ReviewTypeEnum.SELF,
+        });
+
+      const employeeSelfReview =
+        employeeSelfReviews[employeeSelfReviews.length - 1];
+
+      if (
+        employeeSelfReview &&
+        employeeSelfReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
+      ) {
+        const selfQuestionnaires =
+          await this.dataServices.questionnaire.getAllWithoutPagination({
+            review: { id: employeeSelfReview.id },
+          });
+
+        const managerQuestionnaires =
+          await this.dataServices.questionnaire.getAllWithoutPagination({
+            review: { id: review.id },
+          });
+
+        const summaryQuestionnaire = [];
+        const averageRatings = [];
+        for (let i = 0; i < managerQuestionnaires.length; i++) {
+          summaryQuestionnaire.push({
+            question: managerQuestionnaires[i].question,
+            managerFeedback: {
+              answers: managerQuestionnaires[i].answers,
+              ratings: managerQuestionnaires[i].ratings,
+            },
+            revieweeFeedback: {
+              answers: selfQuestionnaires[i].answers,
+              ratings: selfQuestionnaires[i].ratings,
+            },
+          });
+          // averaging ratings of each iteration
+          averageRatings.push(
+            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+              2,
+          );
+        }
+        // total sum of all number elements in the averateRatings array
+        const finalAverageRatings =
+          averageRatings.reduce((acc, curr) => acc + curr, 0) /
+          averageRatings.length;
+        const createReviewSummaryDto = new CreateReviewSummaryDto();
+        createReviewSummaryDto.reviewee = employeeSelfReview.reviewee.id;
+        createReviewSummaryDto.selfReview = employeeSelfReview.id;
+        createReviewSummaryDto.managerReview = review.id;
+        createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
+        createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
+
+        const newReviewSummary =
+          this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
+            createReviewSummaryDto,
+          );
+
+        await this.dataServices.reviewSummary.create(newReviewSummary);
+      }
+    }
     const reviewDto = new ReviewDto();
     reviewDto.progressStatus = ReviewProgressStatusEnum.COMPLETED;
+
     const updatedReview =
       this.reviewFactoryUseCaseService.updateReviewProgessStatus(reviewDto);
     return await this.dataServices.review.update(
@@ -311,7 +506,6 @@ export class UserReviewUseCaseService {
     );
   }
 
-  // TODO :: Implement and test this alternative method to submit review by id
   async submitReviewById(
     reviewId: number,
     updateQuestionnairesDto: UpdateQuestionnairesDto,
