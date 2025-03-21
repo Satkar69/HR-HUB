@@ -385,23 +385,31 @@ export class UserReviewUseCaseService {
             review: { id: managerReview.id },
           });
 
+        const sortedSelfQuestionnaires = selfQuestionnaires.sort(
+          (a, b) => a.questionId - b.questionId,
+        );
+        const sortedManagerQuestionnaires = managerQuestionnaires.sort(
+          (a, b) => a.questionId - b.questionId,
+        );
+
         const summaryQuestionnaire = [];
         const averageRatings = [];
         for (let i = 0; i < managerQuestionnaires.length; i++) {
           summaryQuestionnaire.push({
-            question: managerQuestionnaires[i].question,
+            question: sortedManagerQuestionnaires[i].question,
             managerFeedback: {
-              answers: managerQuestionnaires[i].answers,
-              ratings: managerQuestionnaires[i].ratings,
+              answers: sortedManagerQuestionnaires[i].answers,
+              ratings: sortedManagerQuestionnaires[i].ratings,
             },
             revieweeFeedback: {
-              answers: selfQuestionnaires[i].answers,
-              ratings: selfQuestionnaires[i].ratings,
+              answers: sortedSelfQuestionnaires[i].answers,
+              ratings: sortedSelfQuestionnaires[i].ratings,
             },
           });
           // averaging ratings of each iteration
           averageRatings.push(
-            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+            (sortedManagerQuestionnaires[i].ratings +
+              sortedSelfQuestionnaires[i].ratings) /
               2,
           );
         }
@@ -450,23 +458,31 @@ export class UserReviewUseCaseService {
             review: { id: review.id },
           });
 
+        const sortedSelfQuestionnaires = selfQuestionnaires.sort(
+          (a, b) => a.questionId - b.questionId,
+        );
+        const sortedManagerQuestionnaires = managerQuestionnaires.sort(
+          (a, b) => a.questionId - b.questionId,
+        );
+
         const summaryQuestionnaire = [];
         const averageRatings = [];
         for (let i = 0; i < managerQuestionnaires.length; i++) {
           summaryQuestionnaire.push({
-            question: managerQuestionnaires[i].question,
+            question: sortedManagerQuestionnaires[i].question,
             managerFeedback: {
-              answers: managerQuestionnaires[i].answers,
-              ratings: managerQuestionnaires[i].ratings,
+              answers: sortedManagerQuestionnaires[i].answers,
+              ratings: sortedManagerQuestionnaires[i].ratings,
             },
             revieweeFeedback: {
-              answers: selfQuestionnaires[i].answers,
-              ratings: selfQuestionnaires[i].ratings,
+              answers: sortedSelfQuestionnaires[i].answers,
+              ratings: sortedSelfQuestionnaires[i].ratings,
             },
           });
           // averaging ratings of each iteration
           averageRatings.push(
-            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+            (sortedManagerQuestionnaires[i].ratings +
+              sortedSelfQuestionnaires[i].ratings) /
               2,
           );
         }
@@ -474,6 +490,7 @@ export class UserReviewUseCaseService {
         const finalAverageRatings =
           averageRatings.reduce((acc, curr) => acc + curr, 0) /
           averageRatings.length;
+
         const createReviewSummaryDto = new CreateReviewSummaryDto();
         createReviewSummaryDto.reviewee = employeeSelfReview.reviewee.id;
         createReviewSummaryDto.selfReview = employeeSelfReview.id;
