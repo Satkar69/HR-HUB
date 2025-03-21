@@ -58,10 +58,21 @@ export class UserReviewSummaryUseCaseService {
   }
 
   async acknowdegeReviewSummary(reviewSummaryId: number) {
+    const userId = this.cls.get<UserClsData>('user')?.id;
     const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
       id: reviewSummaryId,
+      reviewee: { id: userId },
     });
-    if (reviewSummary && reviewSummary.isAcknowledged === true) {
+
+    if (!reviewSummary) {
+      throw new AppException(
+        { message: 'You can only acknowledge your own review summary' },
+        'You can only acknowledge your own review summary',
+        401,
+      );
+    }
+
+    if (reviewSummary.isAcknowledged === true) {
       throw new AppException(
         { message: 'Review Summary already acknowledged' },
         'Review Summary already acknowledged',
