@@ -244,6 +244,27 @@ export class UserReviewUseCaseService {
       );
     }
 
+    const selfReviews = await this.dataServices.review.getAllWithoutPagination({
+      reviewer: { id: reviewDto.reviewee },
+      reviewee: { id: reviewDto.reviewee },
+      reviewType: ReviewTypeEnum.SELF,
+    });
+
+    if (selfReviews.length > 0) {
+      if (
+        selfReviews[selfReviews.length - 1].progressStatus !==
+        ReviewProgressStatusEnum.COMPLETED
+      ) {
+        throw new AppException(
+          {
+            message: `You have yet to evaluate the reviewee's latest self review`,
+          },
+          `You have yet to evaluate the reviewee's latest self review`,
+          400,
+        );
+      }
+    }
+
     const inCompleteManagerReviews =
       await this.dataServices.review.getAllWithoutPagination({
         reviewer: { id: userId },
