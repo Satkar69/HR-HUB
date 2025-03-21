@@ -219,6 +219,7 @@ export class UserReviewUseCaseService {
       questions.map(async (question) => {
         const questionnaireDto = new CreateQuestionnaireDto();
         questionnaireDto.review = createdReview.id;
+        questionnaireDto.questionId = question.questionId;
         questionnaireDto.question = question.questionText;
         return this.questionnaireFactroyUseCaseService.createQuestionnaire(
           questionnaireDto,
@@ -301,6 +302,7 @@ export class UserReviewUseCaseService {
       questions.map(async (question) => {
         const questionnaireDto = new CreateQuestionnaireDto();
         questionnaireDto.review = createdReview.id;
+        questionnaireDto.questionId = question.questionId;
         questionnaireDto.question = question.questionText.replace(
           'XYZ',
           reviewee.fullname,
@@ -367,6 +369,8 @@ export class UserReviewUseCaseService {
         });
 
       const managerReview = managerReviews[managerReviews.length - 1];
+
+      // TODO :: send only matching pairs of feedbacks
 
       if (
         managerReview &&
