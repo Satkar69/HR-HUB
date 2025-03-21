@@ -370,8 +370,6 @@ export class UserReviewUseCaseService {
 
       const managerReview = managerReviews[managerReviews.length - 1];
 
-      // TODO :: send only matching pairs of feedbacks
-
       if (
         managerReview &&
         managerReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
