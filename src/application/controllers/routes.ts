@@ -6,6 +6,7 @@ import { TeamControllerModule } from './team/team-controller.module';
 import { TeamMemberControllerModule } from './team-member/team-member-controller.module';
 import { ReviewControllerModule } from './review/review-controller.module';
 import { PeerNominationControllerModule } from './peer-nomination/peer-nomination-controller.module';
+import { ReviewSummaryControllerModule } from './review-summary/review-summary-controller.module';
 
 const routes: Routes = [
   {
@@ -38,6 +39,10 @@ const routes: Routes = [
       {
         path: '/peer-nomination',
         children: [PeerNominationControllerModule],
+      },
+      {
+        path: '/review-summary',
+        children: [ReviewSummaryControllerModule],
       },
     ],
   },

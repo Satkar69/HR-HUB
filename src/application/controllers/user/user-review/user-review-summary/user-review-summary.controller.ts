@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { CoreApiResponse } from 'src/application/api/core-api-response';
 import { Manager } from 'src/application/decorators/manager.decorator';
+import { IPaginationQuery } from 'src/common/interface/response/interface/pagination.options.interface';
 import { UserReviewSummaryUseCaseService } from 'src/use-cases/user-use-cases/user-review/user-review-summary/user-review-summary-use-case.service';
 
 @Controller('/review/summary')
@@ -18,17 +19,19 @@ export class UserReviewSummaryController {
 
   @Manager()
   @Get('/my/team/acknowledged/get-all')
-  async getTeamAcknodlwdgedReviewSummaries() {
-    return CoreApiResponse.success(
+  async getTeamAcknodlwdgedReviewSummaries(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
       await this.userReviewSummaryUseCaseService.getTeamAcknodlwdgedReviewSummaries(),
+      query,
     );
   }
 
   @Manager()
   @Get('/my/team/unacknowledged/get-all')
-  async getTeamUnAcknodlwdgedReviewSummaries() {
-    return CoreApiResponse.success(
+  async getTeamUnAcknodlwdgedReviewSummaries(@Query() query: IPaginationQuery) {
+    return CoreApiResponse.pagination(
       await this.userReviewSummaryUseCaseService.getTeamUnAcknodlwdgedReviewSummaries(),
+      query,
     );
   }
 

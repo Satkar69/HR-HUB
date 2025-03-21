@@ -6,6 +6,7 @@ import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { UpdateReviewSummaryAcknowledgementDto } from 'src/core/dtos/review-summary.dto';
 import { UserReviewSummaryFactoryUseCaseService } from './user-review-summary-factory-use-case.service';
 import AppException from 'src/application/exception/app.exception';
+import { IPaginationData } from 'src/common/interface/response/interface/response-data.interface';
 
 @Injectable()
 export class UserReviewSummaryUseCaseService {
@@ -31,29 +32,27 @@ export class UserReviewSummaryUseCaseService {
 
   // TODO :: make corresponding apis for all of the below methods
 
-  async getTeamAcknodlwdgedReviewSummaries() {
+  async getTeamAcknodlwdgedReviewSummaries(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination(
-        {
-          managerReview: { reviewer: { id: userId } },
-          isAcknowledged: true,
-        },
-        { reviewee: true },
-      );
+    const reviewSummaries = await this.dataServices.reviewSummary.getAll(
+      {
+        managerReview: { reviewer: { id: userId } },
+        isAcknowledged: true,
+      },
+      { reviewee: true },
+    );
     return reviewSummaries;
   }
 
-  async getTeamUnAcknodlwdgedReviewSummaries() {
+  async getTeamUnAcknodlwdgedReviewSummaries(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
-    const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination(
-        {
-          managerReview: { reviewer: { id: userId } },
-          isAcknowledged: false,
-        },
-        { reviewee: true },
-      );
+    const reviewSummaries = await this.dataServices.reviewSummary.getAll(
+      {
+        managerReview: { reviewer: { id: userId } },
+        isAcknowledged: false,
+      },
+      { reviewee: true },
+    );
     return reviewSummaries;
   }
 
