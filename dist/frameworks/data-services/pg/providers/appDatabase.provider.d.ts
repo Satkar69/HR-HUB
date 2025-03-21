@@ -5,5 +5,5 @@ import { QuestionSeeder } from '../seeder/question.seeder';
 export declare const appDataSourceProviders: {
     provide: string;
     useFactory: (adminSeeder: AdminSeeder, questionSeeder: QuestionSeeder, config: EnvironmentConfigService) => Promise<DataSource>;
-    inject: (typeof AdminSeeder | typeof QuestionSeeder | typeof EnvironmentConfigService)[];
+    inject: (typeof EnvironmentConfigService | typeof AdminSeeder | typeof QuestionSeeder)[];
 }[];

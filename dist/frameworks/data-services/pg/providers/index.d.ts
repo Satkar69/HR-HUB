@@ -14,7 +14,7 @@ import { ReviewSummaryEntity } from '../entities/review-summary.entity';
 declare const providers: ({
     provide: string;
     useFactory: (adminSeeder: import("../seeder/admin.seeder").AdminSeeder, questionSeeder: import("../seeder/question.seeder").QuestionSeeder, config: import("../../../../application/config/environment-config.service").EnvironmentConfigService) => Promise<DataSource>;
-    inject: (typeof import("../seeder/admin.seeder").AdminSeeder | typeof import("../seeder/question.seeder").QuestionSeeder | typeof import("../../../../application/config/environment-config.service").EnvironmentConfigService)[];
+    inject: (typeof import("../../../../application/config/environment-config.service").EnvironmentConfigService | typeof import("../seeder/admin.seeder").AdminSeeder | typeof import("../seeder/question.seeder").QuestionSeeder)[];
 } | {
     provide: string;
     useFactory: (dataSource: DataSource) => import("typeorm").Repository<AdminEntity>;
