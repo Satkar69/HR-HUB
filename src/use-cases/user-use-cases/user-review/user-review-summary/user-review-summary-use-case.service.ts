@@ -30,8 +30,6 @@ export class UserReviewSummaryUseCaseService {
     return reviewSummary;
   }
 
-  // TODO :: make corresponding apis for all of the below methods
-
   async getTeamAcknodlwdgedReviewSummaries(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const reviewSummaries = await this.dataServices.reviewSummary.getAll(
