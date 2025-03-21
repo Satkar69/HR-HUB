@@ -350,9 +350,9 @@ export class UserReviewUseCaseService {
       if (managerReviews.length === 0) {
         throw new AppException(
           {
-            message: `The reviewee's manager has not completed any of their review yet`,
+            message: `You have not completed any of this reviewee's review yet`,
           },
-          `The reviewee's manager has not completed any of their review yet`,
+          `You have not completed any of this reviewee's review yet`,
           400,
         );
       }
