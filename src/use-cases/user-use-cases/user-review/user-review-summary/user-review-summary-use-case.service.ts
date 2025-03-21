@@ -21,7 +21,6 @@ export class UserReviewSummaryUseCaseService {
     const reviewSummaries =
       await this.dataServices.reviewSummary.getAllWithoutPagination({
         reviewee: { id: userId },
-        isAcknowledged: false,
       });
     if (reviewSummaries.length === 0) {
       return {};
