@@ -192,16 +192,16 @@ export class UserReviewUseCaseService {
           409,
         );
       }
-    }
-    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
-      selfReview: { id: selfReviews[selfReviews.length - 1].id },
-    });
-    if (reviewSummary.isAcknowledged !== true) {
-      throw new AppException(
-        { message: `You have an unacknowledged review summary` },
-        'You have an unacknowledged review summary',
-        409,
-      );
+      const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+        selfReview: { id: selfReviews[selfReviews.length - 1].id },
+      });
+      if (reviewSummary.isAcknowledged !== true) {
+        throw new AppException(
+          { message: `You have an unacknowledged review summary` },
+          'You have an unacknowledged review summary',
+          409,
+        );
+      }
     }
 
     const newReview = this.reviewFactoryUseCaseService.createReview({
@@ -261,18 +261,18 @@ export class UserReviewUseCaseService {
           409,
         );
       }
-    }
-    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
-      selfReview: {
-        id: revieweeSelfReviews[revieweeSelfReviews.length - 1].id,
-      },
-    });
-    if (!reviewSummary.isAcknowledged) {
-      throw new AppException(
-        { message: `The reviewee has an unacknowledged review summary` },
-        'The reviewee has an unacknowledged review summary',
-        409,
-      );
+      const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+        selfReview: {
+          id: revieweeSelfReviews[revieweeSelfReviews.length - 1].id,
+        },
+      });
+      if (!reviewSummary.isAcknowledged) {
+        throw new AppException(
+          { message: `The reviewee has an unacknowledged review summary` },
+          'The reviewee has an unacknowledged review summary',
+          409,
+        );
+      }
     }
 
     const inCompleteManagerReviews =
