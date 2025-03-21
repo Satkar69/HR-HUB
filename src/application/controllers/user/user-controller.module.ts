@@ -6,6 +6,7 @@ import { UserController } from './user-controller';
 import { UserReviewController } from './user-review/user-review.controller';
 import { UserReviewQuestionnaireController } from './user-review/user-review-questionnaire/user-review-questionnaire.controller';
 import { UserPeerNominationController } from './user-peer-nomination/user-peer-nomination.controller';
+import { UserReviewSummaryController } from './user-review/user-review-summary/user-review-summary.controller';
 
 @Module({
   imports: [UserUseCaseModule],
@@ -16,6 +17,7 @@ import { UserPeerNominationController } from './user-peer-nomination/user-peer-n
     UserReviewController,
     UserReviewQuestionnaireController,
     UserPeerNominationController,
+    UserReviewSummaryController,
   ],
 })
 export class UserControllerModule {}
