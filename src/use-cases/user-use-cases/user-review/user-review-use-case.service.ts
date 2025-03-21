@@ -192,16 +192,16 @@ export class UserReviewUseCaseService {
           409,
         );
       }
-    }
-    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
-      selfReview: { id: selfReviews[selfReviews.length - 1].id },
-    });
-    if (reviewSummary.isAcknowledged !== true) {
-      throw new AppException(
-        { message: `You have an unacknowledged review summary` },
-        'You have an unacknowledged review summary',
-        409,
-      );
+      const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
+        selfReview: { id: selfReviews[selfReviews.length - 1].id },
+      });
+      if (reviewSummary.isAcknowledged !== true) {
+        throw new AppException(
+          { message: `You have an unacknowledged review summary` },
+          'You have an unacknowledged review summary',
+          409,
+        );
+      }
     }
 
     const newReview = this.reviewFactoryUseCaseService.createReview({
@@ -243,36 +243,26 @@ export class UserReviewUseCaseService {
         400,
       );
     }
-    const revieweeSelfReviews =
-      await this.dataServices.review.getAllWithoutPagination({
-        reviewer: { id: reviewDto.reviewee },
-        reviewee: { id: reviewDto.reviewee },
-        reviewType: ReviewTypeEnum.SELF,
-      });
 
-    if (revieweeSelfReviews.length > 0) {
+    const selfReviews = await this.dataServices.review.getAllWithoutPagination({
+      reviewer: { id: reviewDto.reviewee },
+      reviewee: { id: reviewDto.reviewee },
+      reviewType: ReviewTypeEnum.SELF,
+    });
+
+    if (selfReviews.length > 0) {
       if (
-        revieweeSelfReviews[revieweeSelfReviews.length - 1].progressStatus !==
+        selfReviews[selfReviews.length - 1].progressStatus !==
         ReviewProgressStatusEnum.COMPLETED
       ) {
         throw new AppException(
-          { message: `The reviewee's review is yet to be mark as completed` },
-          `The reviewee's review is yet to be mark as completed`,
-          409,
+          {
+            message: `You have yet to evaluate the reviewee's latest self review`,
+          },
+          `You have yet to evaluate the reviewee's latest self review`,
+          400,
         );
       }
-    }
-    const reviewSummary = await this.dataServices.reviewSummary.getOneOrNull({
-      selfReview: {
-        id: revieweeSelfReviews[revieweeSelfReviews.length - 1].id,
-      },
-    });
-    if (!reviewSummary.isAcknowledged) {
-      throw new AppException(
-        { message: `The reviewee has an unacknowledged review summary` },
-        'The reviewee has an unacknowledged review summary',
-        409,
-      );
     }
 
     const inCompleteManagerReviews =

@@ -21,7 +21,6 @@ export class UserReviewSummaryUseCaseService {
     const reviewSummaries =
       await this.dataServices.reviewSummary.getAllWithoutPagination({
         reviewee: { id: userId },
-        isAcknowledged: false,
       });
     if (reviewSummaries.length === 0) {
       return {};
@@ -29,8 +28,6 @@ export class UserReviewSummaryUseCaseService {
     const reviewSummary = reviewSummaries[reviewSummaries.length - 1];
     return reviewSummary;
   }
-
-  // TODO :: make corresponding apis for all of the below methods
 
   async getTeamAcknodlwdgedReviewSummaries(): Promise<IPaginationData> {
     const userId = this.cls.get<UserClsData>('user')?.id;
