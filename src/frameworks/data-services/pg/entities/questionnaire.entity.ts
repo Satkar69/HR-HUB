@@ -11,6 +11,9 @@ export class QuestionnaireEntity extends BaseEntity {
   @Column({ name: 'question', nullable: false })
   question: string;
 
+  @Column({ name: 'question_id', nullable: false })
+  questionId: number;
+
   @Column({
     name: 'answers',
     type: 'text',
