@@ -522,7 +522,7 @@ export class UserReviewUseCaseService {
     updateQuestionnairesDto: UpdateQuestionnairesDto,
   ) {
     const { questionnaires } = updateQuestionnairesDto;
-
+    const userId = this.cls.get<UserClsData>('user')?.id;
     // Validate questionnaires array
     if (!questionnaires.length) {
       throw new AppException(
@@ -534,6 +534,15 @@ export class UserReviewUseCaseService {
 
     // Fetch review early to validate it's not already submitted
     const review = await this.dataServices.review.getOne({ id: reviewId });
+
+    if (review.reviewer.id !== userId) {
+      throw new AppException(
+        { message: 'You are not the reviewer of this review' },
+        'You are not the reviewer of this review',
+        401,
+      );
+    }
+
     if (review.progressStatus === ReviewProgressStatusEnum.SUBMITTED) {
       throw new AppException(
         { message: 'Review already submitted' },
