@@ -12,6 +12,8 @@ export class QuestionnaireFactoryUseCaseService {
       reviewModel.id = createQuestionnaireDto.review;
       questionnaire.review = reviewModel;
     }
+    if (createQuestionnaireDto.questionId)
+      questionnaire.questionId = createQuestionnaireDto.questionId;
     if (createQuestionnaireDto.question)
       questionnaire.question = createQuestionnaireDto.question;
     if (createQuestionnaireDto.answers)

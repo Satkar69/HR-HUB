@@ -13,6 +13,10 @@ export class CreateQuestionnaireDto {
   review: number;
 
   @IsNotEmpty()
+  @IsNumber()
+  questionId: number;
+
+  @IsNotEmpty()
   @IsString()
   question: string;
 
