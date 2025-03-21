@@ -6,6 +6,7 @@ import { IJwtService } from 'src/core/abstracts/adapters/jwt.interface';
 import { CheckTokenDto, SigninDto } from 'src/core/dtos/request/signin.dto';
 import { AdminModel } from 'src/core/models';
 import { AdminSignInResponseType } from './types/admin-signin-response';
+import { addFcmToken } from 'src/common/utils/add-fcm-token';
 
 @Injectable()
 export class AdminAuthUseCaseService {
@@ -37,6 +38,24 @@ export class AdminAuthUseCaseService {
     ) {
       throw new AppException({}, 'Incorrect Email or Password', 400);
     }
+    // if (!signinDto.deviceId || !signinDto.fcmToken || !signinDto.deviceType) {
+    //   throw new AppException(
+    //     {},
+    //     'Device Id, Fcm Token and Device Type are required',
+    //     400,
+    //   );
+    // }
+
+    // await addFcmToken(
+    //   this.dataServices,
+    //   {
+    //     deviceId: signinDto.deviceId,
+    //     fcmToken: signinDto.fcmToken,
+    //     deviceType: signinDto.deviceType,
+    //   },
+    //   adminUser,
+    //   null,
+    // );
 
     const payload = { sub: adminUser.email };
     const accessToken = await this._jwtService.createToken(payload);

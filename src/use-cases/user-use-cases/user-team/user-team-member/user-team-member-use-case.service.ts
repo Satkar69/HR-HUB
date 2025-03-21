@@ -11,7 +11,7 @@ import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 export class UserTeamMemberUseCaseService {
   constructor(
     private dataServices: IDataServices,
-    private cls: IClsStore<AppClsStore>,
+    private readonly cls: IClsStore<AppClsStore>,
   ) {}
 
   async getMyTeamMembers(): Promise<IPaginationData> {

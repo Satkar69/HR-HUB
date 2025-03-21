@@ -1,6 +1,13 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Match } from 'src/application/decorators/match.decorator';
+import { DeviceTypeEnum } from 'src/common/enums/device-type.enum';
 
 export class SigninDto {
   @IsNotEmpty()
@@ -10,6 +17,19 @@ export class SigninDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  deviceId: string;
+
+  @IsOptional()
+  @IsString()
+  fcmToken: string;
+
+  @IsOptional()
+  @IsString()
+  @IsEnum(DeviceTypeEnum)
+  deviceType: string;
 }
 
 export class ForgotPasswordDto {

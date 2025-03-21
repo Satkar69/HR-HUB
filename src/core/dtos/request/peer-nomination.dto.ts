@@ -2,7 +2,7 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { PeerNominationStatusEnum } from 'src/common/enums/peer-nomination-status.enum';
 
 export class PeerNominationDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   nominator: number;
 
