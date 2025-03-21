@@ -344,124 +344,138 @@ export class UserReviewUseCaseService {
           reviewer: { id: userId },
           reviewee: { id: review.reviewee.id },
           reviewType: ReviewTypeEnum.MANAGER,
+          progressStatus: ReviewProgressStatusEnum.COMPLETED,
         });
-      const managerReview = managerReviews[managerReviews.length - 1];
-      if (
-        managerReview &&
-        managerReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
-      ) {
-        const selfQuestionnaires =
-          await this.dataServices.questionnaire.getAllWithoutPagination({
-            review: { id: review.id },
-          });
-        const managerQuestionnaires =
-          await this.dataServices.questionnaire.getAllWithoutPagination({
-            review: { id: managerReview.id },
-          });
 
-        const summaryQuestionnaire = [];
-        const averageRatings = [];
-        for (let i = 0; i < managerQuestionnaires.length; i++) {
-          summaryQuestionnaire.push({
-            question: managerQuestionnaires[i].question,
-            managerFeedback: {
-              answers: managerQuestionnaires[i].answers,
-              ratings: managerQuestionnaires[i].ratings,
-            },
-            revieweeFeedback: {
-              answers: selfQuestionnaires[i].answers,
-              ratings: selfQuestionnaires[i].ratings,
-            },
-          });
-          // averaging ratings of each iteration
-          averageRatings.push(
-            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
-              2,
-          );
-        }
-
-        // total sum of all number elements in the averateRatings array
-        const finalAverageRatings =
-          averageRatings.reduce((acc, curr) => acc + curr, 0) /
-          averageRatings.length;
-
-        const createReviewSummaryDto = new CreateReviewSummaryDto();
-        createReviewSummaryDto.reviewee = review.reviewee.id;
-        createReviewSummaryDto.selfReview = review.id;
-        createReviewSummaryDto.managerReview = managerReview.id;
-        createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
-        createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
-        createReviewSummaryDto.isAcknowledged = false;
-
-        const newReviewSummary =
-          this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
-            createReviewSummaryDto,
-          );
-        await this.dataServices.reviewSummary.create(newReviewSummary);
+      if (managerReviews.length === 0) {
+        throw new AppException(
+          {
+            message: `The reviewee's manager has not completed any of their review yet`,
+          },
+          `The reviewee's manager has not completed any of their review yet`,
+          400,
+        );
       }
+
+      const managerReview = managerReviews[managerReviews.length - 1];
+
+      const selfQuestionnaires =
+        await this.dataServices.questionnaire.getAllWithoutPagination({
+          review: { id: review.id },
+        });
+      const managerQuestionnaires =
+        await this.dataServices.questionnaire.getAllWithoutPagination({
+          review: { id: managerReview.id },
+        });
+
+      const summaryQuestionnaire = [];
+      const averageRatings = [];
+      for (let i = 0; i < managerQuestionnaires.length; i++) {
+        summaryQuestionnaire.push({
+          question: managerQuestionnaires[i].question,
+          managerFeedback: {
+            answers: managerQuestionnaires[i].answers,
+            ratings: managerQuestionnaires[i].ratings,
+          },
+          revieweeFeedback: {
+            answers: selfQuestionnaires[i].answers,
+            ratings: selfQuestionnaires[i].ratings,
+          },
+        });
+        // averaging ratings of each iteration
+        averageRatings.push(
+          (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+            2,
+        );
+      }
+
+      // total sum of all number elements in the averateRatings array
+      const finalAverageRatings =
+        averageRatings.reduce((acc, curr) => acc + curr, 0) /
+        averageRatings.length;
+
+      const createReviewSummaryDto = new CreateReviewSummaryDto();
+      createReviewSummaryDto.reviewee = review.reviewee.id;
+      createReviewSummaryDto.selfReview = review.id;
+      createReviewSummaryDto.managerReview = managerReview.id;
+      createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
+      createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
+      createReviewSummaryDto.isAcknowledged = false;
+
+      const newReviewSummary =
+        this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
+          createReviewSummaryDto,
+        );
+      await this.dataServices.reviewSummary.create(newReviewSummary);
     } else if (review.reviewType === ReviewTypeEnum.MANAGER) {
       const employeeSelfReviews =
         await this.dataServices.review.getAllWithoutPagination({
           reviewer: { id: review.reviewee.id },
           reviewee: { id: review.reviewee.id },
           reviewType: ReviewTypeEnum.SELF,
+          progressStatus: ReviewProgressStatusEnum.COMPLETED,
         });
+
+      if (employeeSelfReviews.length === 0) {
+        throw new AppException(
+          {
+            message: `The reviewee still has an incomplete self review`,
+          },
+          `The reviewee still has an incomplete self review`,
+          400,
+        );
+      }
 
       const employeeSelfReview =
         employeeSelfReviews[employeeSelfReviews.length - 1];
 
-      if (
-        employeeSelfReview &&
-        employeeSelfReview.progressStatus === ReviewProgressStatusEnum.COMPLETED
-      ) {
-        const selfQuestionnaires =
-          await this.dataServices.questionnaire.getAllWithoutPagination({
-            review: { id: employeeSelfReview.id },
-          });
+      const selfQuestionnaires =
+        await this.dataServices.questionnaire.getAllWithoutPagination({
+          review: { id: employeeSelfReview.id },
+        });
 
-        const managerQuestionnaires =
-          await this.dataServices.questionnaire.getAllWithoutPagination({
-            review: { id: review.id },
-          });
+      const managerQuestionnaires =
+        await this.dataServices.questionnaire.getAllWithoutPagination({
+          review: { id: review.id },
+        });
 
-        const summaryQuestionnaire = [];
-        const averageRatings = [];
-        for (let i = 0; i < managerQuestionnaires.length; i++) {
-          summaryQuestionnaire.push({
-            question: managerQuestionnaires[i].question,
-            managerFeedback: {
-              answers: managerQuestionnaires[i].answers,
-              ratings: managerQuestionnaires[i].ratings,
-            },
-            revieweeFeedback: {
-              answers: selfQuestionnaires[i].answers,
-              ratings: selfQuestionnaires[i].ratings,
-            },
-          });
-          // averaging ratings of each iteration
-          averageRatings.push(
-            (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
-              2,
-          );
-        }
-        // total sum of all number elements in the averateRatings array
-        const finalAverageRatings =
-          averageRatings.reduce((acc, curr) => acc + curr, 0) /
-          averageRatings.length;
-        const createReviewSummaryDto = new CreateReviewSummaryDto();
-        createReviewSummaryDto.reviewee = employeeSelfReview.reviewee.id;
-        createReviewSummaryDto.selfReview = employeeSelfReview.id;
-        createReviewSummaryDto.managerReview = review.id;
-        createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
-        createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
-
-        const newReviewSummary =
-          this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
-            createReviewSummaryDto,
-          );
-
-        await this.dataServices.reviewSummary.create(newReviewSummary);
+      const summaryQuestionnaire = [];
+      const averageRatings = [];
+      for (let i = 0; i < managerQuestionnaires.length; i++) {
+        summaryQuestionnaire.push({
+          question: managerQuestionnaires[i].question,
+          managerFeedback: {
+            answers: managerQuestionnaires[i].answers,
+            ratings: managerQuestionnaires[i].ratings,
+          },
+          revieweeFeedback: {
+            answers: selfQuestionnaires[i].answers,
+            ratings: selfQuestionnaires[i].ratings,
+          },
+        });
+        // averaging ratings of each iteration
+        averageRatings.push(
+          (managerQuestionnaires[i].ratings + selfQuestionnaires[i].ratings) /
+            2,
+        );
       }
+      // total sum of all number elements in the averateRatings array
+      const finalAverageRatings =
+        averageRatings.reduce((acc, curr) => acc + curr, 0) /
+        averageRatings.length;
+      const createReviewSummaryDto = new CreateReviewSummaryDto();
+      createReviewSummaryDto.reviewee = employeeSelfReview.reviewee.id;
+      createReviewSummaryDto.selfReview = employeeSelfReview.id;
+      createReviewSummaryDto.managerReview = review.id;
+      createReviewSummaryDto.summaryQuestionnaire = summaryQuestionnaire;
+      createReviewSummaryDto.averagePerformanceRating = finalAverageRatings;
+
+      const newReviewSummary =
+        this.userReviewSummaryFactoryUseCaseService.createReviewSummary(
+          createReviewSummaryDto,
+        );
+
+      await this.dataServices.reviewSummary.create(newReviewSummary);
     }
     const reviewDto = new ReviewDto();
     reviewDto.progressStatus = ReviewProgressStatusEnum.COMPLETED;
