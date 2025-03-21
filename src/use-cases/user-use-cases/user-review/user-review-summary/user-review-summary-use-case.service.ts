@@ -29,23 +29,31 @@ export class UserReviewSummaryUseCaseService {
     return reviewSummary;
   }
 
+  // TODO :: make corresponding apis for all of the below methods
+
   async getTeamAcknodlwdgedReviewSummaries() {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination({
-        managerReview: { reviewer: { id: userId } },
-        isAcknowledged: true,
-      });
+      await this.dataServices.reviewSummary.getAllWithoutPagination(
+        {
+          managerReview: { reviewer: { id: userId } },
+          isAcknowledged: true,
+        },
+        { reviewee: true },
+      );
     return reviewSummaries;
   }
 
   async getTeamUnAcknodlwdgedReviewSummaries() {
     const userId = this.cls.get<UserClsData>('user')?.id;
     const reviewSummaries =
-      await this.dataServices.reviewSummary.getAllWithoutPagination({
-        managerReview: { reviewer: { id: userId } },
-        isAcknowledged: false,
-      });
+      await this.dataServices.reviewSummary.getAllWithoutPagination(
+        {
+          managerReview: { reviewer: { id: userId } },
+          isAcknowledged: false,
+        },
+        { reviewee: true },
+      );
     return reviewSummaries;
   }
 
