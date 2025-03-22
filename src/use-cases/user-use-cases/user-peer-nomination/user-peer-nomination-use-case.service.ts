@@ -45,6 +45,7 @@ export class UserPeerNominationUseCaseService {
     }
     const existingPeerReview = await this.dataServices.review.getOneOrNull({
       reviewer: { id: peerNominationDto.nominee },
+      reviewType: ReviewTypeEnum.PEER,
     });
     if (existingPeerReview) {
       throw new AppException(
@@ -139,6 +140,7 @@ export class UserPeerNominationUseCaseService {
         questions.map(async (question) => {
           const questionnaireDto = new CreateQuestionnaireDto();
           questionnaireDto.review = createdReview.id;
+          questionnaireDto.questionId = question.id;
           questionnaireDto.question = question.questionText.replace(
             'XYZ',
             updatedPeerNomination.reviewee.fullname,
