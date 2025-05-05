@@ -405,11 +405,13 @@ export class UserReviewUseCaseService {
             },
           });
           // averaging ratings of each iteration
-          averageRatings.push(
+          const averageRating =
             (sortedManagerQuestionnaires[i].ratings +
               sortedSelfQuestionnaires[i].ratings) /
-              2,
-          );
+            2;
+          if (averageRating !== 0) {
+            averageRatings.push(averageRating);
+          }
         }
 
         // total sum of all number elements in the averateRatings array
@@ -478,11 +480,13 @@ export class UserReviewUseCaseService {
             },
           });
           // averaging ratings of each iteration
-          averageRatings.push(
+          const averageRating =
             (sortedManagerQuestionnaires[i].ratings +
               sortedSelfQuestionnaires[i].ratings) /
-              2,
-          );
+            2;
+          if (averageRating !== 0) {
+            averageRatings.push(averageRating);
+          }
         }
         // total sum of all number elements in the averateRatings array
         const finalAverageRatings =
