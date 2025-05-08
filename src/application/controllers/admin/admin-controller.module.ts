@@ -4,6 +4,7 @@ import { AdminController } from './admin.controller';
 import { AdminUserController } from './admin-user/admin-user.controller';
 import { AdminTeamController } from './admin-team/admin-team.controller';
 import { AdminTeamMemberController } from './admin-team/admin-team-member/admin-team-member.controller';
+import { AdminDashbaordController } from './admin-dashboard/admin-dashboard.controller';
 
 @Module({
   imports: [AdminUseCaseModule],
@@ -12,6 +13,7 @@ import { AdminTeamMemberController } from './admin-team/admin-team-member/admin-
     AdminUserController,
     AdminTeamController,
     AdminTeamMemberController,
+    AdminDashbaordController,
   ],
 })
 export class AdminControllerModule {}
