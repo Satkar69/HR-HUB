@@ -3,6 +3,7 @@ import { IDataServices } from 'src/core/abstracts';
 import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { AppClsStore } from 'src/common/interface/app-cls-store.interface';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
+import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 
 @Injectable()
 export class adminDashboardUseCaseService {
@@ -30,5 +31,45 @@ export class adminDashboardUseCaseService {
       totalSubmittedReviews: totalSubmittedReviews.length,
       totalPendingReviews: totalPendingReviews.length,
     };
+  }
+
+  async generateDepartmentReviewOverview() {
+    const [allReviews, allTeams, allTeamMemberships] = await Promise.all([
+      this.dataServices.review.getAllWithoutPagination(),
+      this.dataServices.team.getAllWithoutPagination(),
+      this.dataServices.teamMember.getAllWithoutPagination({}, { team: true }),
+    ]);
+
+    const response = allTeams.map((team) => {
+      const currentTeamMembers = allTeamMemberships
+        .filter((teamMember) => teamMember.team.id === team.id)
+        .map((teamMember) => {
+          return teamMember.member;
+        });
+      currentTeamMembers.push(team.leader);
+
+      const currentTeamReviews = allReviews.filter((review) =>
+        currentTeamMembers.some((member) => member.id === review.reviewee.id),
+      );
+
+      return {
+        department: team.department,
+        totalReviews: currentTeamReviews.length,
+        completedReviews: currentTeamReviews.filter(
+          (review) =>
+            review.progressStatus === ReviewProgressStatusEnum.COMPLETED,
+        ).length,
+        submittedReviews: currentTeamReviews.filter(
+          (review) =>
+            review.progressStatus === ReviewProgressStatusEnum.SUBMITTED,
+        ).length,
+        pendingReviews: currentTeamReviews.filter(
+          (review) =>
+            review.progressStatus === ReviewProgressStatusEnum.PENDING,
+        ).length,
+      };
+    });
+
+    return response;
   }
 }

@@ -14,4 +14,11 @@ export class AdminDashbaordController {
       await this.adminDashboardUseCaseService.generateOverallReviewInfo(),
     );
   }
+
+  @Get('/get-department-review-overview')
+  async getDepartmentReviewOverview() {
+    return CoreApiResponse.success(
+      await this.adminDashboardUseCaseService.generateDepartmentReviewOverview(),
+    );
+  }
 }
