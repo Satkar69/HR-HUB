@@ -6,6 +6,7 @@ import { IPaginationData } from 'src/common/interface/response/interface/respons
 import { IGenericRepository, OtherMethodOptions } from 'src/core/abstracts';
 import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { Repository } from 'typeorm';
+import { patchUpdatedAt } from 'src/common/utils/patch-updatedAt';
 
 export class PgGenericRepository<T> implements IGenericRepository<T> {
   protected _repository: Repository<T>;
@@ -118,13 +119,16 @@ export class PgGenericRepository<T> implements IGenericRepository<T> {
           404,
         );
       }
-      await this._repository.update(condition, item);
+      await this._repository.update(condition, patchUpdatedAt(item));
       return this._repository.findOneBy(condition);
     });
   }
   async updateMany(condition: NonNullable<unknown>, item: any) {
     return rescue<T>(async (): Promise<any> => {
-      const updateResult = await this._repository.update(condition, item);
+      const updateResult = await this._repository.update(
+        condition,
+        patchUpdatedAt(item),
+      );
       return updateResult;
     });
   }

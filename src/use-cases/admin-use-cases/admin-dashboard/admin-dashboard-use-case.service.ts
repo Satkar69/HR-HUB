@@ -3,7 +3,6 @@ import { IDataServices } from 'src/core/abstracts';
 import { IClsStore } from 'src/core/abstracts/adapters/cls-store.abstract';
 import { AppClsStore } from 'src/common/interface/app-cls-store.interface';
 import { ReviewProgressStatusEnum } from 'src/common/enums/review-progress-status.enum';
-import { ReviewTypeEnum } from 'src/common/enums/review-type.enum';
 
 @Injectable()
 export class adminDashboardUseCaseService {
