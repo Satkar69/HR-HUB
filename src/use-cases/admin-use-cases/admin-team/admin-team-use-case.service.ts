@@ -19,32 +19,6 @@ export class AdminTeamUseCaseService {
 
   // add team Members while create teams
   async createTeam(createTeamDto: CreateTeamDto) {
-    // const newTeam =
-    //   this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
-    // const createdTeam = await this.dataServices.team.create(newTeam);
-    // const createManagerMembership = new CreateTeamMemberDto();
-    // createManagerMembership.team = createdTeam.id;
-    // createManagerMembership.member = createTeamDto.leader;
-    // const newManagerMembership =
-    //   this.adminTeamMemberFactoryUseCaseService.createTeamMember(
-    //     createManagerMembership,
-    //   );
-    // await this.dataServices.teamMember.create(newManagerMembership);
-    // await Promise.all(
-    //   createTeamDto.members.map(async (member) => {
-    //     const createTeamMemberDto = new CreateTeamMemberDto();
-    //     createTeamMemberDto.team = createdTeam.id;
-    //     createTeamMemberDto.member = member;
-    //     const newTeamMember =
-    //       this.adminTeamMemberFactoryUseCaseService.createTeamMember(
-    //         createTeamMemberDto,
-    //       );
-    //     return await this.dataServices.teamMember.create(newTeamMember);
-    //   }),
-    // );
-
-    // return createdTeam;
-
     // Create team object
     const newTeam =
       this.adminTeamFactoryUseCaseService.createTeam(createTeamDto);
